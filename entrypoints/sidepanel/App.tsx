@@ -10,7 +10,7 @@ import { type Tool } from './lib/tools';
 import { useUser } from '@/lib/hooks/useUserData';
 import { useRemoteTools } from '@/lib/hooks/useRemoteTools';
 import { secureStorage } from '@/lib/storage/secure-storage';
-import { UserProvider } from '@/lib/contexts/UserContext';
+import { GlobalUserProvider } from '@/lib/contexts/UserContext';
 
 const AppRoutes: React.FC = () => {
     const navigate = useNavigate();
@@ -125,13 +125,13 @@ const AppRoutes: React.FC = () => {
 export const App: React.FC = () => {
     return (
         <ThemeProvider>
-            <UserProvider>
+            <GlobalUserProvider>
                 <TooltipProvider>
                     <HashRouter>
                         <AppRoutes />
                     </HashRouter>
                 </TooltipProvider>
-            </UserProvider>
+            </GlobalUserProvider>
         </ThemeProvider>
     );
 };

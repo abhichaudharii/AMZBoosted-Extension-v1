@@ -8,7 +8,7 @@
 //   const handleLogin = async () => {
 //     // Open website login page in new tab
 //     chrome.tabs.create({
-//       url: 'https://amzboosted.com/login',
+//       url: 'https://amzboosted.com/sign-in',
 //     });
 
 //     toast.info('Opening login page...', {
@@ -19,7 +19,7 @@
 //   const handleSignUp = async () => {
 //     // Open website signup page in new tab
 //     chrome.tabs.create({
-//       url: 'https://amzboosted.com/signup',
+//       url: 'https://amzboosted.com/sign-up',
 //     });
 
 //     toast.info('Opening signup page...', {
@@ -132,9 +132,9 @@ const getLogoUrl = () => {
 export const LoginScreen: React.FC = () => {
   const handleLogin = async () => {
     if (typeof chrome !== 'undefined' && chrome.tabs) {
-      chrome.tabs.create({ url: 'https://amzboosted.com/login' });
+      chrome.tabs.create({ url: 'https://amzboosted.com/sign-in' });
     } else {
-      window.open('https://amzboosted.com/login', '_blank');
+      window.open('https://amzboosted.com/sign-in', '_blank');
     }
     
     toast.info('Opening login page...', {
@@ -144,9 +144,9 @@ export const LoginScreen: React.FC = () => {
 
   const handleSignUp = async () => {
     if (typeof chrome !== 'undefined' && chrome.tabs) {
-      chrome.tabs.create({ url: 'https://amzboosted.com/signup' });
+      chrome.tabs.create({ url: 'https://amzboosted.com/sign-up' });
     } else {
-      window.open('https://amzboosted.com/signup', '_blank');
+      window.open('https://amzboosted.com/sign-up', '_blank');
     }
 
     toast.info('Opening signup page...', {

@@ -4,6 +4,7 @@ import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { Zap, Calendar, ExternalLink } from 'lucide-react';
 import { formatCompactNumber } from '@/entrypoints/dashboard/pages/dashboard-home/components/utils';
+import { API_CONFIG } from '@/lib/api/config';
 
 interface PlanUsageProps {
   credits: any;
@@ -99,7 +100,7 @@ export const PlanUsage: React.FC<PlanUsageProps> = ({ credits, schedules, limits
         </div>
         
         <div className="pt-2">
-           <Button variant="outline" className="w-full text-xs h-9 border-white/10 bg-white/5 hover:bg-white/10 text-white" onClick={() => window.open('http://localhost:8090/dashboard/billing', '_blank')}>
+           <Button variant="outline" className="w-full text-xs h-9 border-white/10 bg-white/5 hover:bg-white/10 text-white" onClick={() => window.open(`${API_CONFIG.dashboardURL}/dashboard/billing`, '_blank')}>
                Manage Plan & Limits <ExternalLink className="ml-2 h-3 w-3" />
            </Button>
         </div>

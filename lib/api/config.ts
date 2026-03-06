@@ -15,7 +15,12 @@ export const API_CONFIG = {
      * - Staging: https://staging-api.amzboosted.com/api/v1
      * - Production: https://amzboosted.com/api/v1
      */
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8090/api/v1',
+    baseURL: import.meta.env.VITE_API_URL || 'https://amzboosted.com/api/v1',
+
+    /**
+     * Dashboard URL for web links
+     */
+    dashboardURL: import.meta.env.VITE_DASHBOARD_URL || 'https://amzboosted.com',
 
     /**
      * Request timeout in milliseconds

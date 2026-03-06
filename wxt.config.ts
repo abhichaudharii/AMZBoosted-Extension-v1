@@ -37,7 +37,6 @@ export default defineConfig({
             'https://*.amazon.it/*',
             'https://*.amazon.es/*',
             'https://*.amazon.in/*',
-            'http://localhost:8090/*',
             'https://*.amzboosted.com/*',
         ],
         side_panel: {

@@ -3,7 +3,6 @@ import { defineContentScript } from 'wxt/sandbox';
 export default defineContentScript({
     matches: [
         '*://*.amzboosted.com/*',
-        '*://localhost/*',
     ],
     main() {
         console.log('[AMZBoosted] Landing page content script loaded');

@@ -3,13 +3,6 @@ import { IAPIClient } from '../types';
 
 export const IntegrationsService = {
     async getIntegrations(client: IAPIClient): Promise<{ integrations: any[] } | null> {
-        // Try to get from local storage first
-        const localData = await secureStorage.get('integrations');
-        if (localData.integrations) {
-            return { integrations: localData.integrations };
-        }
-
-        // If not in storage, try API
         try {
             const result = await client.request<{ integrations: any[] }>('/integrations/available');
             if (result.success && result.data) {
@@ -17,7 +10,9 @@ export const IntegrationsService = {
                 return result.data;
             }
         } catch (e) {
-            console.warn('[API] Failed to fetch integrations from backend, using empty list');
+            console.warn('[API] Failed to fetch integrations from backend, using cached or empty list');
+            const localData = await secureStorage.get('integrations');
+            return localData.integrations ? { integrations: localData.integrations } : { integrations: [] };
         }
 
         return { integrations: [] };
@@ -47,22 +42,10 @@ export const IntegrationsService = {
         }
     },
 
-    async getAvailableIntegrations(client: IAPIClient, forceRefresh = false): Promise<any[]> {
-        if (!forceRefresh) {
-            const cached = await secureStorage.get('availableIntegrations');
-            // 1 hour TTL for available list
-            if (cached.availableIntegrations && cached.availableIntegrationsTimestamp && (Date.now() - cached.availableIntegrationsTimestamp < 60 * 60 * 1000)) {
-                return cached.availableIntegrations;
-            }
-        }
-
-        const result = await client.request<any>('/integrations/available'); // Type as any to handle nested check
+    async getAvailableIntegrations(client: IAPIClient): Promise<any[]> {
+        const result = await client.request<any>('/integrations/available');
 
         if (result.success && result.data) {
-            // Handle nested data response: { data: { data: [...] } }
-            // The request method returns the body.data as result.data
-            // If the API returns { data: [ ... ] }, then result.data is [ ... ], but user report shows nested.
-            // Let's be defensive.
             let integrations = [];
 
             if (Array.isArray(result.data)) {
@@ -71,10 +54,7 @@ export const IntegrationsService = {
                 integrations = result.data.data;
             }
 
-            await secureStorage.set({
-                availableIntegrations: integrations,
-                availableIntegrationsTimestamp: Date.now()
-            });
+            await secureStorage.set({ availableIntegrations: integrations });
             return integrations;
         }
 
@@ -92,7 +72,7 @@ export const IntegrationsService = {
         });
 
         if (result.success) {
-            await IntegrationsService.getAvailableIntegrations(client, true); // Refresh cache
+            await IntegrationsService.getAvailableIntegrations(client); // Refresh cache
             return { success: true, data: result.data };
         }
 
@@ -105,7 +85,7 @@ export const IntegrationsService = {
         });
 
         if (result.success) {
-            await IntegrationsService.getAvailableIntegrations(client, true); // Refresh cache
+            await IntegrationsService.getAvailableIntegrations(client); // Refresh cache
             return true;
         }
         return false;
@@ -121,7 +101,7 @@ export const IntegrationsService = {
         });
 
         if (result.success) {
-            await IntegrationsService.getAvailableIntegrations(client, true); // Refresh cache
+            await IntegrationsService.getAvailableIntegrations(client); // Refresh cache
             return { success: true, data: result.data };
         }
 

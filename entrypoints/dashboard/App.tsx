@@ -8,7 +8,7 @@ import { OnboardingFlow } from './components/OnboardingFlow';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { ThemeProvider } from '@/lib/contexts/ThemeContext';
-import { UserProvider } from '@/lib/contexts/UserContext';
+import { GlobalUserProvider } from '@/lib/contexts/UserContext';
 import { KeyboardShortcutsDialog } from '@/components/keyboard-shortcuts/KeyboardShortcutsDialog';
 import { ScrollProgress } from '@/components/ui/scroll-progress';
 import { ScrollToTop } from '@/components/ui/scroll-to-top';
@@ -252,7 +252,7 @@ export const App: React.FC = () => {
       <ThemeProvider>
         <TooltipProvider delayDuration={300}>
           <HashRouter>
-            <UserProvider>
+            <GlobalUserProvider>
               <ScrollProgress />
               <ScrollToTop />
               <AppContent />
@@ -271,7 +271,7 @@ export const App: React.FC = () => {
                   }
                 }}
               />
-            </UserProvider>
+            </GlobalUserProvider>
           </HashRouter>
         </TooltipProvider>
       </ThemeProvider>

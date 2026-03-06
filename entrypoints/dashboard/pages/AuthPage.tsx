@@ -15,14 +15,14 @@ const getLogoUrl = () => {
 
 export const AuthPage: React.FC = () => {
   const handleLogin = async () => {
-    window.open('https://amzboosted.com/login', '_blank');
+    window.open('https://amzboosted.com/sign-in', '_blank');
     toast.info('Opening login page...', {
       description: 'Please sign in on the website. The extension will automatically detect your login.',
     });
   };
 
   const handleSignUp = async () => {
-    window.open('https://amzboosted.com/signup', '_blank');
+    window.open('https://amzboosted.com/sign-up', '_blank');
     toast.info('Opening signup page...', {
       description: 'Please create an account on the website. The extension will automatically detect your login.',
     });

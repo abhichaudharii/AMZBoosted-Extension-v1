@@ -24,7 +24,9 @@ import {
   getTrialProgress, 
 } from '@/lib/utils/subscription';
 
-const WEB_DASHBOARD_URL = 'http://localhost:8090/dashboard/billing';
+import { API_CONFIG } from '@/lib/api/config';
+
+const WEB_DASHBOARD_URL = `${API_CONFIG.dashboardURL}/dashboard/billing`;
 
 export const BillingPage: React.FC = () => {
   const { loading: authLoading } = useAuth();
