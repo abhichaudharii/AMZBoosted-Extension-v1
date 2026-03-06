@@ -1,0 +1,58 @@
+{
+    "data": {
+        "axAsins": [
+            {
+                "obfuscatedMarketplaceId": "ATVPDKIKX0DER",
+                "asin": "B0CRQHVP6Q",
+                "productName": "6 Pack Fairy Lights Battery Operated 7ft 20 LED Mini String Lights Twinkle Lights Silver Wire Firefly Starry Moon Lights for Mason Jars Wedding Party Christmas Centerpiece Table Decorations Warm White",
+                "asinImageUrl": "https://m.media-amazon.com/images/I/51DzCAzlxiL.jpg",
+                "currency": "USD",
+                "brand": "HOBAYS",
+                "category": "Seasonal Décor/Seasonal Lighting/Indoor String Lights",
+                "launchDate": "2024-01-07",
+                "clickCount": 737636.0,
+                "clickCountT360": 737636.0,
+                "averageSellingPriceT90": 7.954,
+                "averageSellingPriceT360": 7.675248,
+                "totalReviews": 4814.0,
+                "averageCustomerRating": 4.4,
+                "averageBestSellersRanking": 4.7363,
+                "totalOfferDepthT90": 1.0,
+                "newOfferAvgDepthT90": 1.0,
+                "pageViewsT7": null,
+                "pageViewsT7StartDate": null,
+                "pageViewsT7EndDate": null,
+                "pageViewsLatest": null,
+                "pageViewsLatestDate": null,
+                "isExactMatch": false,
+                "__typename": "AxAsinMetrics"
+            },
+            {
+                "obfuscatedMarketplaceId": "ATVPDKIKX0DER",
+                "asin": "B0DCNWXM2F",
+                "productName": "Fairdeer 6 Pack Fairy Lights Battery Operated - 7ft 20 Led Twinkle Lights 3 Modes Bulk Mini String Lights Waterproof for Mason Jars Vases DIY Party Wedding Decoration Christmas -Warm White",
+                "asinImageUrl": "https://m.media-amazon.com/images/I/51YqaB6nNIL.jpg",
+                "currency": "USD",
+                "brand": "Fairdeer",
+                "category": "Seasonal Décor/Seasonal Lighting/Indoor String Lights",
+                "launchDate": "2024-09-03",
+                "clickCount": 169242.0,
+                "clickCountT360": 169242.0,
+                "averageSellingPriceT90": 4.950526,
+                "averageSellingPriceT360": 4.972069,
+                "totalReviews": 992.0,
+                "averageCustomerRating": 4.3,
+                "averageBestSellersRanking": 16.2747,
+                "totalOfferDepthT90": 1.0,
+                "newOfferAvgDepthT90": 1.0,
+                "pageViewsT7": null,
+                "pageViewsT7StartDate": null,
+                "pageViewsT7EndDate": null,
+                "pageViewsLatest": null,
+                "pageViewsLatestDate": null,
+                "isExactMatch": false,
+                "__typename": "AxAsinMetrics"
+            }
+        ]
+    }
+}

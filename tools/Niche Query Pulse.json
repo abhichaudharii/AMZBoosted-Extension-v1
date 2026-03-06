@@ -1,0 +1,84 @@
+{
+    "data": {
+        "niche": {
+            "searchTermMetrics": [
+                {
+                    "searchTermId": "18ca54bb689079f0fd520ddb077e72d7",
+                    "searchTerm": "ovela pumpkin seed oil",
+                    "searchConversionRate": "0.018344927614085037",
+                    "searchVolumeT90": "37231",
+                    "searchVolumeQoq": "9306.75",
+                    "searchVolumeYoy": "0",
+                    "searchVolumeT360": 37235,
+                    "searchVolumeGrowthT180": 0,
+                    "searchVolumeGrowthT360Yoy": 0,
+                    "searchConversionRateT360": 0.018342956895394117,
+                    "clickShare": "0.7943798285083623",
+                    "clickShareT360": 0.7943972835314091,
+                    "topClickedProducts": [
+                        {
+                            "asin": "B09883RWZW",
+                            "asinTitle": "Pumpkin Seed Oil 3000mg 50% Linoleic Acid 90 Softgels 100% Cold Pressed No Additives Resealable and Recyclable Pouch by Alpha01",
+                            "asinImageUrl": "https://m.media-amazon.com/images/I/41h3iq7SJZL.jpg",
+                            "obfuscatedMarketplaceId": "A1F83G8C2ARO7P",
+                            "__typename": "ProductInfo"
+                        },
+                        {
+                            "asin": "B0FS1PB6D7",
+                            "asinTitle": "Pumpkin Seed Oil Capsules | Cold Pressed Pure Virgin Oil Essential Fatty Acids & Phytosterols 180 Softgels Good for hair health | Non-GMO",
+                            "asinImageUrl": "https://m.media-amazon.com/images/I/41Nhk0yVJxL.jpg",
+                            "obfuscatedMarketplaceId": "A1F83G8C2ARO7P",
+                            "__typename": "ProductInfo"
+                        },
+                        {
+                            "asin": "B0FB44BRT4",
+                            "asinTitle": "300 PCS Pumpkin Seed Oil Capsules Pumpkin Seed Extract (3000mg per 3 Soft Gel Serving) | 2 in 1 Pumpkins Seed Oil for Hair Growth Cold Pressed Supports Hair Heart Skin Supplement | Non-GMO",
+                            "asinImageUrl": "https://m.media-amazon.com/images/I/41Mw0q5IgxL.jpg",
+                            "obfuscatedMarketplaceId": "A1F83G8C2ARO7P",
+                            "__typename": "ProductInfo"
+                        }
+                    ],
+                    "__typename": "SearchTermMetrics"
+                },
+                {
+                    "searchTermId": "9859524e69489603a065f8a4f1ba7d26",
+                    "searchTerm": "ovela pumpkin seed oil capsules",
+                    "searchConversionRate": "0.022230851373653042",
+                    "searchVolumeT90": "10301",
+                    "searchVolumeQoq": "0.0",
+                    "searchVolumeYoy": "0",
+                    "searchVolumeT360": 10301,
+                    "searchVolumeGrowthT180": 0,
+                    "searchVolumeGrowthT360Yoy": 0,
+                    "searchConversionRateT360": 0.022230851373653042,
+                    "clickShare": "0.20562017149163767",
+                    "clickShareT360": 0.20560271646859082,
+                    "topClickedProducts": [
+                        {
+                            "asin": "B0FS1PB6D7",
+                            "asinTitle": "Pumpkin Seed Oil Capsules | Cold Pressed Pure Virgin Oil Essential Fatty Acids & Phytosterols 180 Softgels Good for hair health | Non-GMO",
+                            "asinImageUrl": "https://m.media-amazon.com/images/I/41Nhk0yVJxL.jpg",
+                            "obfuscatedMarketplaceId": "A1F83G8C2ARO7P",
+                            "__typename": "ProductInfo"
+                        },
+                        {
+                            "asin": "B0FG29BR9H",
+                            "asinTitle": "Pumpkin Seed Oil Capsules 1000mg Per Serving - 300 Softgels for Hair & Urinary Support - 2-in-1 Formula Rich in Zinc & Omega Fatty Acids - Easy-to-Swallow",
+                            "asinImageUrl": "https://m.media-amazon.com/images/I/41kcwXQOEhL.jpg",
+                            "obfuscatedMarketplaceId": "A1F83G8C2ARO7P",
+                            "__typename": "ProductInfo"
+                        },
+                        {
+                            "asin": "B0FJBR3D92",
+                            "asinTitle": "Pumpkin Seed Oil Capsules 3000mg Cold Pressed Pumpkin Seed Oil for Hair Growth & Bladder Support 100% Pure No Additives High in Omega 6 & 9 - UK Made Supplement - 90 Softgels Easy to Swallow",
+                            "asinImageUrl": "https://m.media-amazon.com/images/I/51UZm8HeokL.jpg",
+                            "obfuscatedMarketplaceId": "A1F83G8C2ARO7P",
+                            "__typename": "ProductInfo"
+                        }
+                    ],
+                    "__typename": "SearchTermMetrics"
+                }
+            ]
+        }
+    }
+}

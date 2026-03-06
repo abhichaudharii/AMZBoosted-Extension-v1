@@ -1,0 +1,106 @@
+{
+    "data": {
+        "niches": [
+            {
+                "nicheId": "6d8a37b5-ae1d-4fbe-91e9-5f82de833b68",
+                "obfuscatedMarketplaceId": "ATVPDKIKX0DER",
+                "nicheTitle": "mini led christmas lights",
+                "referenceAsinImageUrl": "https://m.media-amazon.com/images/I/617FgARSa1L.jpg",
+                "currency": "USD",
+                "nicheSummary": {
+                    "searchVolumeT90": "111485",
+                    "searchVolumeGrowthT90": "19.306921675774134",
+                    "searchVolumeT360": "148621",
+                    "searchVolumeGrowthT180": 2.696359729507679,
+                    "searchVolumeGrowthT360": "1.010864712010716",
+                    "minimumUnitsSoldT90": "6000",
+                    "maximumUnitsSoldT90": "8000",
+                    "minimumUnitsSoldT360": "8000",
+                    "maximumUnitsSoldT360": "10000",
+                    "minimumAverageUnitsSoldT360": 0.0,
+                    "maximumAverageUnitsSoldT360": 100.0,
+                    "minimumPrice": 5.86,
+                    "maximumPrice": 114.11,
+                    "salesPotentialScore": null,
+                    "productCount": "147",
+                    "avgPrice": "18.5965699252",
+                    "avgPriceT360": 18.5965699252,
+                    "demand": 34286.0,
+                    "category": "String Lights",
+                    "nicheType": null,
+                    "returnRateT360": 0.024884371609661393,
+                    "__typename": "NicheSummary"
+                },
+                "topSearchTermMetrics": [
+                    {
+                        "searchTerm": "mini led christmas lights",
+                        "__typename": "SearchTermMetrics"
+                    },
+                    {
+                        "searchTerm": "led multicolor christmas lights",
+                        "__typename": "SearchTermMetrics"
+                    },
+                    {
+                        "searchTerm": "micro led christmas lights",
+                        "__typename": "SearchTermMetrics"
+                    },
+                    {
+                        "searchTerm": "led light christmas tree",
+                        "__typename": "SearchTermMetrics"
+                    }
+                ],
+                "__typename": "Niche"
+            },
+            {
+                "nicheId": "47f232b8891d12e1ad2fc8ab4d0139fb",
+                "obfuscatedMarketplaceId": "ATVPDKIKX0DER",
+                "nicheTitle": "flower centerpieces for tables",
+                "referenceAsinImageUrl": "https://m.media-amazon.com/images/I/61nqtx4B-RL.jpg",
+                "currency": "USD",
+                "nicheSummary": {
+                    "searchVolumeT90": "146983",
+                    "searchVolumeGrowthT90": "-0.11605655486796451",
+                    "searchVolumeT360": "656575",
+                    "searchVolumeGrowthT180": -0.08752122710894783,
+                    "searchVolumeGrowthT360": "2.3732268820353157",
+                    "minimumUnitsSoldT90": "750",
+                    "maximumUnitsSoldT90": "1000",
+                    "minimumUnitsSoldT360": "4000",
+                    "maximumUnitsSoldT360": "5000",
+                    "minimumAverageUnitsSoldT360": 0.0,
+                    "maximumAverageUnitsSoldT360": 100.0,
+                    "minimumPrice": 6.11,
+                    "maximumPrice": 199.07,
+                    "salesPotentialScore": null,
+                    "productCount": "201",
+                    "avgPrice": "46.5046094129",
+                    "avgPriceT360": 46.5046094129,
+                    "demand": 91556.0,
+                    "category": "Artificial Flowers",
+                    "nicheType": null,
+                    "returnRateT360": 0.04653530185198398,
+                    "__typename": "NicheSummary"
+                },
+                "topSearchTermMetrics": [
+                    {
+                        "searchTerm": "centerpieces",
+                        "__typename": "SearchTermMetrics"
+                    },
+                    {
+                        "searchTerm": "flower centerpieces for tables",
+                        "__typename": "SearchTermMetrics"
+                    },
+                    {
+                        "searchTerm": "floral centerpieces",
+                        "__typename": "SearchTermMetrics"
+                    },
+                    {
+                        "searchTerm": "tall centerpieces for tables",
+                        "__typename": "SearchTermMetrics"
+                    }
+                ],
+                "__typename": "Niche"
+            }
+        ]
+    }
+}

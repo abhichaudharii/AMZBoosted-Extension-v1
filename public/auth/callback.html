@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AMZBoosted - Authorization Complete</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 0 0% 3.9%;
+      --card: 0 0% 100%;
+      --card-foreground: 0 0% 3.9%;
+      --popover: 0 0% 100%;
+      --popover-foreground: 0 0% 3.9%;
+      --primary: 24 100% 50%;
+      --primary-foreground: 0 0% 100%;
+      --secondary: 0 0% 96.1%;
+      --secondary-foreground: 0 0% 9%;
+      --muted: 0 0% 96.1%;
+      --muted-foreground: 0 0% 45.1%;
+      --accent: 24 100% 50%;
+      --accent-foreground: 0 0% 100%;
+      --destructive: 0 84.2% 60.2%;
+      --destructive-foreground: 0 0% 98%;
+      --border: 0 0% 89.8%;
+      --input: 0 0% 89.8%;
+      --ring: 24 100% 50%;
+      --radius: 0.5rem;
+      --text-primary: hsl(var(--foreground));
+    }
+
+    .dark {
+      --background: 0 0% 3.9%;
+      --foreground: 0 0% 98%;
+      --card: 0 0% 3.9%;
+      --card-foreground: 0 0% 98%;
+      --popover: 0 0% 3.9%;
+      --popover-foreground: 0 0% 98%;
+      --primary: 24 100% 50%;
+      --primary-foreground: 0 0% 100%;
+      --secondary: 0 0% 14.9%;
+      --secondary-foreground: 0 0% 98%;
+      --muted: 0 0% 14.9%;
+      --muted-foreground: 0 0% 63.9%;
+      --accent: 24 100% 50%;
+      --accent-foreground: 0 0% 100%;
+      --destructive: 0 62.8% 30.6%;
+      --destructive-foreground: 0 0% 98%;
+      --border: 0 0% 14.9%;
+      --input: 0 0% 14.9%;
+      --ring: 24 100% 50%;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Premium Design System Inlined */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
+    }
+
+    .dark .glass-card {
+      background: rgba(17, 18, 20, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Page Specific Styles */
+    .container {
+      max-width: 500px;
+      width: 100%;
+      padding: 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #FF6B00, #FF914D);
+    }
+
+    .icon-success {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      background: linear-gradient(135deg, #FF6B00 0%, #FF914D 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: scaleIn 0.5s ease-out;
+      box-shadow: 0 10px 25px rgba(255, 107, 0, 0.3);
+    }
+
+    .icon-success svg {
+      width: 48px;
+      height: 48px;
+      stroke: white;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      animation: drawCheck 0.5s ease-out 0.3s forwards;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+    }
+
+    .icon-error {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 24px;
+      background: hsl(var(--destructive));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: scaleIn 0.5s ease-out;
+      box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+    }
+
+    .icon-error svg {
+      width: 48px;
+      height: 48px;
+      stroke: white;
+      stroke-width: 3;
+      stroke-linecap: round;
+    }
+
+    h1 {
+      font-family: 'Manrope', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: hsl(var(--foreground));
+      margin-bottom: 12px;
+    }
+
+    p {
+      font-size: 16px;
+      color: hsl(var(--muted-foreground));
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      margin: 32px auto;
+      border: 3px solid hsl(var(--muted));
+      border-top: 3px solid hsl(var(--primary));
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes scaleIn {
+      0% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes drawCheck {
+      to { stroke-dashoffset: 0; }
+    }
+
+    .countdown {
+      font-size: 14px;
+      color: hsl(var(--muted-foreground));
+      margin-top: 24px;
+    }
+
+    .error-details {
+      background: hsl(var(--destructive) / 0.1);
+      border: 1px solid hsl(var(--destructive) / 0.2);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 24px;
+      text-align: left;
+    }
+
+    .error-details code {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: hsl(var(--destructive));
+      word-break: break-all;
+    }
+
+    /* Dark Mode Toggle */
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      color: hsl(var(--muted-foreground));
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      transition: color 0.2s;
+    }
+
+    .theme-toggle:hover {
+      color: hsl(var(--foreground));
+      background: hsl(var(--muted));
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </button>
+
+  <div class="container glass-card" id="container">
+    <div class="spinner"></div>
+    <h1>Processing Authorization...</h1>
+    <p>Please wait while we complete your login.</p>
+  </div>
+
+  <script>
+    // Theme handling
+    function toggleTheme() {
+      const html = document.documentElement;
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+
+    // Initialize theme
+    if (localStorage.getItem('theme') === 'dark' || 
+        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+
+    (async function() {
+      try {
+        // Parse URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const state = urlParams.get('state');
+        const error = urlParams.get('error');
+
+        const container = document.getElementById('container');
+
+        // Handle error from auth page
+        if (error) {
+          container.innerHTML = `
+            <div class="icon-error">
+              <svg viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </div>
+            <h1>Authorization Failed</h1>
+            <p>There was an error during the authorization process.</p>
+            <div class="error-details">
+              <code>${error}</code>
+            </div>
+            <p class="countdown">This window will close in <span id="countdown">3</span> seconds...</p>
+          `;
+
+          // Send error to background
+          chrome.runtime.sendMessage({
+            type: 'OAUTH_CALLBACK',
+            data: { error: error }
+          });
+
+          // Close window after countdown
+          let seconds = 3;
+          const countdownEl = document.getElementById('countdown');
+          const interval = setInterval(() => {
+            seconds--;
+            if (countdownEl) countdownEl.textContent = seconds.toString();
+            if (seconds <= 0) {
+              clearInterval(interval);
+              window.close();
+            }
+          }, 1000);
+
+          return;
+        }
+
+        // Validate required parameters
+        if (!code || !state) {
+          throw new Error('Missing authorization code or state parameter');
+        }
+
+        // Verify OAuth state
+        const stored = await chrome.storage.local.get(['oauthState', 'oauthPending']);
+
+        if (!stored.oauthPending) {
+          throw new Error('No pending OAuth request found');
+        }
+
+        if (stored.oauthState !== state) {
+          throw new Error('Invalid state parameter - possible CSRF attack');
+        }
+
+        // Send auth code to background script
+        chrome.runtime.sendMessage({
+          type: 'OAUTH_CALLBACK',
+          data: { code, state }
+        });
+
+        // Show success message
+        container.innerHTML = `
+          <div class="icon-success">
+            <svg viewBox="0 0 24 24">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <h1>Authorization Successful!</h1>
+          <p>You've been successfully logged in to AMZBoosted.</p>
+          <p class="countdown">This window will close in <span id="countdown">3</span> seconds...</p>
+        `;
+
+        // Close window after countdown
+        let seconds = 3;
+        const countdownEl = document.getElementById('countdown');
+        const interval = setInterval(() => {
+          seconds--;
+          if (countdownEl) countdownEl.textContent = seconds.toString();
+          if (seconds <= 0) {
+            clearInterval(interval);
+            window.close();
+          }
+        }, 1000);
+
+      } catch (error) {
+        console.error('[OAuth Callback] Error:', error);
+
+        const container = document.getElementById('container');
+        container.innerHTML = `
+          <div class="icon-error">
+            <svg viewBox="0 0 24 24">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </div>
+          <h1>Something Went Wrong</h1>
+          <p>An unexpected error occurred during authorization.</p>
+          <div class="error-details">
+            <code>${error.message}</code>
+          </div>
+          <p class="countdown">This window will close in <span id="countdown">3</span> seconds...</p>
+        `;
+
+        // Send error to background
+        chrome.runtime.sendMessage({
+          type: 'OAUTH_CALLBACK',
+          data: { error: error.message }
+        });
+
+        // Close window after countdown
+        let seconds = 3;
+        const countdownEl = document.getElementById('countdown');
+        const interval = setInterval(() => {
+          seconds--;
+          if (countdownEl) countdownEl.textContent = seconds.toString();
+          if (seconds <= 0) {
+            clearInterval(interval);
+            window.close();
+          }
+        }, 1000);
+      }
+    })();
+  </script>
+</body>
+</html>

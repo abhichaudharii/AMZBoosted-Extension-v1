@@ -1,0 +1,152 @@
+Based on the premium dashboard designs you uploaded, I have extracted the specific "Design Tokens" (colors, spacing, and effects) that constitute this look.
+
+You can apply these styling details to your extension (whether you are using standard CSS, Tailwind, or another framework) to match the web app's "invatgravity" (assuming you meant *integrity* or *visual identity*).
+
+Here is the **AMZBoosted Design System Spec** derived from your screenshots:
+
+### 1. Color Palette
+
+The design relies on a "High Contrast Dark Mode" with vibrant orange accents.
+
+* **Backgrounds:**
+* **Main Page Background:** `#09090b` (Very deep black-grey)
+* **Card/Container Background:** `#121212` or `#0f0f10` (Slightly lighter than main bg)
+* **Sidebar/Panel Background:** `#000000` (Pure black)
+
+
+* **Primary Brand Color (Orange):**
+* **Primary Solid:** `#F97316` (Vibrant Orange)
+* **Primary Gradient:** `linear-gradient(90deg, #FF8F26 0%, #FF5E00 100%)` (Used on "Upgrade Plan" and "Save Changes" buttons)
+* **Glow/Bloom:** `#FF5E00` with 20% opacity (Used for glows behind cards or text)
+
+
+* **Text Colors:**
+* **Headings (White):** `#FFFFFF`
+* **Body Text (Grey):** `#A1A1AA` (Neutral-400)
+* **Darker Text/Placeholders:** `#52525B` (Neutral-600)
+
+
+* **Borders & Dividers:**
+* **Subtle Border:** `#27272A` (Neutral-800) — *Key to the premium look, don't use pure white borders.*
+* **Active Border:** `#F97316` (Orange) — Used on selected cards (like the "Active" Integrations).
+
+
+
+### 2. UI Component Styling
+
+#### **A. Cards (The "Glassy" Dark Look)**
+
+The cards in your dashboard don't just float; they have a distinct border and background.
+
+* **Border Radius:** `12px` (approx. `0.75rem`)
+* **Border:** `1px solid #27272A`
+* **Background:** `#0f0f10`
+* **Effect:** For "Active" or "Highlighted" cards (like the Google Drive card in your screenshot), add a subtle **inner glow** or an orange border: `border: 1px solid rgba(249, 115, 22, 0.5);`
+
+#### **B. Buttons (Primary)**
+
+The "Upgrade Plan" and "Save Changes" buttons are the focal points.
+
+* **Background:** Use the **Primary Gradient** mentioned above.
+* **Text:** `#FFFFFF`, Bold (`700` weight).
+* **Border Radius:** `8px` (approx. `0.5rem`).
+* **Shadow:** `box-shadow: 0px 4px 12px rgba(255, 94, 0, 0.3);` (This orange shadow creates the "glowing" effect).
+
+#### **C. Input Fields**
+
+Looking at the "Settings" page (Account Information):
+
+* **Background:** `#18181b` (Zinc-900).
+* **Border:** `1px solid #3f3f46` (Zinc-700).
+* **Text:** `#e4e4e7` (Zinc-200).
+* **Padding:** Generous padding, roughly `10px 16px`.
+* **Radius:** `6px` or `8px`.
+
+#### **D. Status Badges & Tags**
+
+Seen on "Free Trial" or "Active":
+
+* **Background:** Very low opacity of the color (e.g., `rgba(255, 255, 255, 0.1)` or `rgba(249, 115, 22, 0.1)`).
+* **Text:** Bright, matching the color.
+* **Pill Shape:** `border-radius: 9999px`.
+* **Dot:** Small `6px` circle with matching color.
+
+### 3. Typography
+
+The font appears to be a clean, modern sans-serif like **Inter**, **Roboto**, or **Plus Jakarta Sans**.
+
+* **Headings:** Bold (`700`), White.
+* **Labels:** Medium (`500`), Light Grey.
+* **Data/Numbers:** Monospace or Tabular nums (often used in analytics dashboards) to keep alignment.
+
+### 4. Background Effects (The "Premium" Vibe)
+
+In the "Integrations" and "Settings" screenshots, you can see a very subtle purple/orange gradient glow in the deep background (behind the cards).
+
+* **CSS Implementation:** You can achieve this in your extension popup by adding a large, blurred circle behind your main container.
+```css
+.glow-effect {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(249,115,22,0.15) 0%, rgba(0,0,0,0) 70%);
+    filter: blur(40px);
+    z-index: -1;
+}
+
+```
+
+
+
+You are absolutely right, I missed that crucial detail. That faint geometric grid background is actually a huge part of what makes the design feel "techy" and "engineered."
+
+Looking closely at the Settings Page screenshot you shared, the background isn't just flat black; it has a subtle coordinate grid pattern fading into the darkness.
+
+Here is the specific CSS to recreate that "Geometric Grid" background for your extension:
+The "AMZBoosted" Grid Background Spec
+
+1. Base Color: The underlying color is a deep, rich black (Zinc-950).
+
+    Hex: #09090b
+
+2. The Geometry Boxes (Grid Pattern): This is created using CSS gradients. It looks like a 1px thin line that is very transparent (about 3-5% opacity).
+
+3. The Purple/Dark Glow: There is a subtle ambient glow (vignette) that makes the grid look like it's fading in and out.
+Copy-Paste CSS
+
+You can apply this to the <body> or main container of your extension popup/pages:
+CSS
+
+/* Apply this to your main container */
+.amz-background {
+  /* 1. Base Dark Color */
+  background-color: #09090b;
+
+  /* 2. The Geometric Grid Pattern */
+  /* This creates vertical and horizontal lines every 40px */
+  background-image: 
+    linear-gradient(to right, #27272a 1px, transparent 1px),
+    linear-gradient(to bottom, #27272a 1px, transparent 1px);
+  
+  /* Size of the squares */
+  background-size: 40px 40px;
+
+  /* 3. (Optional) Fading Mask */
+  /* This makes the grid fade out at the edges so it's not too overwhelming */
+  mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+  
+  /* Ensure it covers the whole area */
+  width: 100%;
+  min-height: 100vh;
+}
+
+If you are using Tailwind CSS:
+
+You can achieve this by adding a custom utility or arbitrary values:
+HTML
+
+<div class="bg-[#09090b] bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:40px_40px]">
+  </div>
+
+Why this matters: This grid signals "precision" and "data," which aligns perfectly with your tool's purpose (Amazon analytics and automation). It turns a boring black window into a professional workspace.
