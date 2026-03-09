@@ -166,12 +166,12 @@ export function DataTable<TData, TValue>({
         {/* Search */}
         {showGlobalFilter && (
           <div className="relative w-full max-w-xs group">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-white transition-colors" />
             <Input
               placeholder={searchPlaceholder}
               value={globalFilter ?? ''}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              className="pl-9 h-9 text-sm bg-muted/20 border-border/50 focus-visible:ring-primary/20 transition-all focus-visible:border-primary/50 rounded-lg"
+              className="pl-9 h-9 text-sm bg-muted/20 border-border/50 focus-visible:ring-white/10 transition-all focus-visible:border-white/20 rounded-lg"
             />
           </div>
         )}
@@ -240,9 +240,9 @@ export function DataTable<TData, TValue>({
               // Use Portal to escape any parent stacking contexts (overflow, backdrop-filter, etc.)
               // This is critical for SchedulesPage where the table is inside a backdrop-blur container
               createPortal(
-                  <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[90%] max-w-2xl bg-[#0A0A0B] border border-[#FF6B00]/30 shadow-2xl shadow-orange-900/20 rounded-2xl p-4 flex items-center justify-between z-[9999] animate-in slide-in-from-bottom-5">
+                  <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[90%] max-w-2xl bg-[#0A0A0B]/80 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/50 rounded-2xl p-4 flex items-center justify-between z-[9999] animate-in slide-in-from-bottom-5">
                       <div className="flex items-center gap-3">
-                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#FF6B00]/20 text-[#FF6B00] font-bold text-sm">
+                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white font-bold text-sm">
                               {selectedRowsData.length}
                           </div>
                           <span className="text-white font-medium">Selected</span>
@@ -316,7 +316,7 @@ export function DataTable<TData, TValue>({
                             row.toggleSelected(!row.getIsSelected());
                         }
                     }}
-                    className={`border-border/40 transition-colors hover:bg-muted/40 data-[state=selected]:bg-primary/5 data-[state=selected]:hover:bg-primary/10 ${selectOnRowClick ? 'cursor-pointer' : ''} ${getRowClassName ? getRowClassName(row.original) : ''}`}
+                    className={`border-border/40 transition-colors hover:bg-muted/40 data-[state=selected]:bg-muted/60 data-[state=selected]:hover:bg-muted/80 ${selectOnRowClick ? 'cursor-pointer' : ''} ${getRowClassName ? getRowClassName(row.original) : ''}`}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id} className="align-middle">

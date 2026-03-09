@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Clock, Play } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface UpcomingSchedulesProps {
   schedules: any[];
@@ -22,69 +23,83 @@ export const UpcomingSchedules: React.FC<UpcomingSchedulesProps> = ({ schedules 
   }));
 
   return (
-    <div className="bg-[#1A1A1C]/50 backdrop-blur-md rounded-xl border border-white/5 overflow-hidden transition-all hover:border-white/10 group flex flex-col h-full">
-      <div className="p-6 border-b border-white/5 flex items-center justify-between">
-         <div>
-           <div className="flex items-center gap-2 text-lg font-bold text-white">
-              <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-500 group-hover:scale-110 transition-transform">
-                <Clock className="h-5 w-5" />
-              </div>
-              Upcoming Tasks
+    <div className="bg-[#0A0A0B]/60 backdrop-blur-xl rounded-3xl border border-white/5 overflow-hidden transition-all hover:border-white/10 group flex flex-col relative">
+       {/* Ambient Glow */}
+       <div className="absolute top-1/2 -left-12 h-24 w-24 bg-primary/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+      <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between relative z-10">
+         <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform duration-500 shadow-[0_0_20px_-5px_rgba(255,107,0,0.3)]">
+              <Clock className="h-4 w-4" />
             </div>
-            <p className="text-sm text-gray-400 mt-1">Scheduled for next 24 hours</p>
+            <h3 className="text-lg font-black text-white tracking-tight">Upcoming Tasks</h3>
         </div>
         <Button
             variant="ghost"
             size="sm"
             onClick={() => navigate('/schedules')}
-             className="text-gray-400 hover:text-white hover:bg-white/5"
+             className="text-xs h-8 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-bold px-4"
         >
             View All
         </Button>
       </div>
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden relative z-10">
         {upcomingSchedules.length > 0 ? (
           <div className="divide-y divide-white/5">
             {upcomingSchedules.map((schedule) => (
               <div
                 key={schedule.id}
-                className="p-4 hover:bg-white/5 transition-colors group/item"
+                className="px-6 py-4 hover:bg-white/[0.03] transition-all group/item relative overflow-hidden"
               >
-                <div className="flex items-center justify-between gap-3">
+                {/* Subtle side highlight */}
+                <div className={cn(
+                    "absolute left-0 top-0 bottom-0 w-1 transition-all duration-500 opacity-0 group-hover/item:opacity-100",
+                    schedule.enabled ? "bg-emerald-500 shadow-[2px_0_10px_rgba(16,185,129,0.5)]" : "bg-slate-500"
+                )} />
+
+                <div className="flex items-center justify-between gap-4">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                       <div className={`h-2 w-2 rounded-full ring-2 ring-offset-1 ring-offset-[#1A1A1C] ${schedule.enabled ? 'bg-emerald-500 ring-emerald-500/30' : 'bg-gray-500 ring-gray-500/30'}`} />
-                      <p className="text-sm font-bold text-white truncate group-hover/item:text-indigo-400 transition-colors">{schedule.name}</p>
+                    <div className="flex items-center gap-2.5">
+                       <div className={cn(
+                           "h-2 w-2 rounded-full animate-pulse shadow-[0_0_8px_rgba(0,0,0,0.5)]",
+                           schedule.enabled ? "bg-emerald-500 shadow-emerald-500/50" : "bg-slate-500 shadow-slate-500/50"
+                       )} />
+                      <p className="text-[14px] font-bold text-white truncate group-hover/item:text-primary transition-colors duration-300 tracking-tight">
+                        {schedule.name}
+                      </p>
                     </div>
-                    <div className="flex items-center gap-2 mt-1 pl-4">
-                      <Badge variant="secondary" className="text-[10px] h-5 bg-white/5 text-gray-400 hover:bg-white/10">
+                    <div className="flex items-center gap-2.5 mt-2 pl-4">
+                      <Badge variant="outline" className="text-[9px] h-5 bg-white/5 text-slate-400 border-white/10 font-black uppercase tracking-widest px-2 group-hover/item:bg-white/10 transition-colors">
                         {schedule.frequency}
                       </Badge>
-                      <span className="text-xs text-gray-500 flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
+                      <span className="text-[11px] text-slate-500 font-bold flex items-center gap-1.5 underline decoration-primary/20 decoration-2 underline-offset-4">
+                        <Clock className="h-3 w-3 text-primary/60" />
                         {format(schedule.nextRun, 'HH:mm')}
                       </span>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500 bg-white/5 hover:bg-white/10" disabled>
-                     <Play className="h-3 w-3" />
+                  <Button variant="ghost" size="icon" className="h-10 w-10 rounded-2xl text-slate-600 bg-white/5 hover:bg-primary/20 hover:text-primary border border-transparent hover:border-primary/30 transition-all duration-300" disabled>
+                     <Play className="h-3.5 w-3.5" />
                   </Button>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center h-64 text-center p-6">
-            <Clock className="h-12 w-12 text-gray-700 mb-3" />
-            <p className="text-sm font-medium text-gray-500">No upcoming tasks</p>
+          <div className="flex flex-col items-center justify-center h-72 text-center p-8 relative z-10">
+            <div className="h-16 w-16 rounded-3xl bg-white/5 flex items-center justify-center mb-6 border border-white/10">
+                <Clock className="h-8 w-8 text-slate-700" />
+            </div>
+            <p className="text-base font-bold text-slate-400">No tasks on the radar</p>
+            <p className="text-xs text-slate-500 mt-2 max-w-[200px]">Create a schedule to automate your Seller Central workflow.</p>
             <Button
               variant="outline"
               size="sm"
-              className="mt-4 border-white/10 bg-white/5 hover:bg-white/10 text-white"
+              className="mt-6 border-white/10 bg-white/5 hover:bg-primary/20 hover:text-primary hover:border-primary/40 text-white rounded-xl px-6 h-9 transition-all"
               onClick={() => navigate('/schedules')}
             >
-              Create Schedule
+              Add Schedule
             </Button>
           </div>
         )}

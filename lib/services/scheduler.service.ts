@@ -191,29 +191,29 @@ class SchedulerService {
                 return true;
 
             case 'weekly': {
-                // Check if cron expression exists for day of week
                 if (schedule.cronExpression) {
-                    // Simple day check (0 = Sunday, 6 = Saturday)
                     const dayOfWeek = now.getDay();
-                    // cronExpression format: "minute hour * * dayOfWeek"
                     const cronParts = schedule.cronExpression.split(' ');
                     if (cronParts.length >= 5) {
                         const cronDayOfWeek = cronParts[4];
-                        return cronDayOfWeek === '*' || cronDayOfWeek === String(dayOfWeek);
+                        if (cronDayOfWeek === '*') return true;
+
+                        // Handle comma-separated days
+                        const allowedDays = cronDayOfWeek.split(',').map(Number);
+                        return allowedDays.includes(dayOfWeek);
                     }
                 }
                 return false;
             }
 
             case 'monthly': {
-                // Check if cron expression exists for day of month
                 if (schedule.cronExpression) {
                     const dayOfMonth = now.getDate();
-                    // cronExpression format: "minute hour dayOfMonth * *"
                     const cronParts = schedule.cronExpression.split(' ');
                     if (cronParts.length >= 5) {
                         const cronDayOfMonth = cronParts[2];
-                        return cronDayOfMonth === '*' || cronDayOfMonth === String(dayOfMonth);
+                        if (cronDayOfMonth === '*') return true;
+                        return cronDayOfMonth === String(dayOfMonth);
                     }
                 }
                 return false;
@@ -505,7 +505,7 @@ class SchedulerService {
             // 5. Update schedule in IndexedDB
             await indexedDBService.updateSchedule(scheduleId, {
                 lastRunAt: new Date().toISOString(),
-                nextRunAt: this.calculateNextRun(schedule).toISOString(),
+                nextRunAt: this.calculateNextRun(schedule, true).toISOString(),
                 runCount: (schedule.runCount || 0) + 1,
                 retryCount: 0 // Reset retry count on success
             });
@@ -618,7 +618,7 @@ class SchedulerService {
                 // Update schedule (don't disable, just mark run)
                 await indexedDBService.updateSchedule(scheduleId, {
                     lastRunAt: new Date().toISOString(),
-                    nextRunAt: this.calculateNextRun(schedule).toISOString(),
+                    nextRunAt: this.calculateNextRun(schedule, true).toISOString(),
                     retryCount: 0 // Reset retry count for non-auth errors
                 });
             }
@@ -708,68 +708,83 @@ class SchedulerService {
     /**
      * Calculate next run time for a schedule
      */
-    private calculateNextRun(schedule: Schedule): Date {
+    private calculateNextRun(schedule: Schedule, skipCurrent: boolean = false): Date {
         const now = new Date();
         const [hours, minutes] = schedule.time.split(':').map(Number);
 
         let nextRun = new Date();
         nextRun.setHours(hours, minutes, 0, 0);
 
-        switch (schedule.frequency) {
+        const freq = schedule.frequency.toLowerCase();
+        switch (freq) {
             case 'hourly': {
-                // Add interval hours to nextRun
                 const interval = schedule.interval || 1;
-
-                // If nextRun is in the past, keep adding interval until it's in the future
-                while (nextRun <= now) {
+                while (nextRun <= now || skipCurrent) {
                     nextRun.setHours(nextRun.getHours() + interval);
+                    skipCurrent = false;
                 }
                 break;
             }
 
             case 'daily':
-                // If time has passed today, schedule for tomorrow
-                if (nextRun <= now) {
+                if (nextRun <= now || skipCurrent) {
                     nextRun.setDate(nextRun.getDate() + 1);
                 }
                 break;
 
             case 'weekly': {
-                // Parse day of week from cron expression
+                let targetDays: number[] = [];
+
                 if (schedule.cronExpression) {
                     const cronParts = schedule.cronExpression.split(' ');
-                    if (cronParts.length >= 5) {
-                        const targetDay = parseInt(cronParts[4]);
-                        if (!isNaN(targetDay)) {
-                            const currentDay = nextRun.getDay();
-                            let daysUntilNext = targetDay - currentDay;
+                    if (cronParts.length >= 5 && cronParts[4] !== '*') {
+                        targetDays = cronParts[4].split(',').map(Number);
+                    }
+                } else if (schedule.days && schedule.days.length > 0) {
+                    const dayMap: Record<string, number> = { 'sun': 0, 'mon': 1, 'tue': 2, 'wed': 3, 'thu': 4, 'fri': 5, 'sat': 6 };
+                    targetDays = schedule.days.map(d => dayMap[d.toLowerCase()]).filter(d => d !== undefined);
+                }
 
-                            if (daysUntilNext <= 0 || (daysUntilNext === 0 && nextRun <= now)) {
-                                daysUntilNext += 7;
-                            }
+                if (targetDays.length > 0) {
+                    const currentDay = nextRun.getDay();
+                    let nextDay = targetDays.sort().find(d => d > currentDay || (d === currentDay && nextRun > now && !skipCurrent));
 
-                            nextRun.setDate(nextRun.getDate() + daysUntilNext);
-                        }
+                    if (nextDay === undefined) {
+                        nextDay = targetDays[0];
+                    }
+
+                    let daysUntilNext = nextDay - currentDay;
+                    if (daysUntilNext < 0 || (daysUntilNext === 0 && (nextRun <= now || skipCurrent))) {
+                        daysUntilNext += 7;
+                    }
+
+                    nextRun.setDate(nextRun.getDate() + daysUntilNext);
+                } else {
+                    if (nextRun <= now || skipCurrent) {
+                        nextRun.setDate(nextRun.getDate() + 1);
                     }
                 }
                 break;
             }
 
             case 'monthly': {
-                // Parse day of month from cron expression
+                let targetDay = 1;
                 if (schedule.cronExpression) {
                     const cronParts = schedule.cronExpression.split(' ');
                     if (cronParts.length >= 5) {
-                        const targetDay = parseInt(cronParts[2]);
-                        if (!isNaN(targetDay)) {
-                            nextRun.setDate(targetDay);
-
-                            // If that day has passed this month, schedule for next month
-                            if (nextRun <= now) {
-                                nextRun.setMonth(nextRun.getMonth() + 1);
-                            }
-                        }
+                        targetDay = parseInt(cronParts[2]) || 1;
                     }
+                } else {
+                    targetDay = schedule.dayOfMonth || 1;
+                }
+
+                nextRun.setDate(targetDay);
+                if (nextRun <= now || skipCurrent) {
+                    nextRun.setMonth(nextRun.getMonth() + 1);
+                    // Handle cases where the target day might not exist in the next month
+                    // by setting the date again - if targetDay is 31 and next is Feb, 
+                    // this will correctly roll over.
+                    nextRun.setDate(targetDay);
                 }
                 break;
             }

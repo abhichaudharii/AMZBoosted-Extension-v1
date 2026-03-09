@@ -1,9 +1,11 @@
-import * as XLSX from 'xlsx';
-
 /**
  * Generate Excel file from data (Generic)
+ * Optimized with Dynamic Import for Public Beta
  */
-export const generateExcel = (data: any[], sheetName: string = "Data"): { content: any, mimeType: string, extension: string } => {
+export const generateExcel = async (data: any[], sheetName: string = "Data"): Promise<{ content: any, mimeType: string, extension: string }> => {
+    // Dynamically import XLSX only when needed
+    const XLSX = await import('xlsx');
+
     // Create workbook
     const wb = XLSX.utils.book_new();
 
@@ -19,7 +21,7 @@ export const generateExcel = (data: any[], sheetName: string = "Data"): { conten
     // Add worksheet to workbook
     XLSX.utils.book_append_sheet(wb, ws, sheetName);
 
-    // Generate binary output
+    // Generate binary output (using correct method signature for dynamic import)
     const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
 
     return {

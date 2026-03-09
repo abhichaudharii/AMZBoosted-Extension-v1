@@ -7,59 +7,49 @@
 import { useUserContext } from '@/lib/contexts/UserContext';
 import { getSubscriptionState, SubscriptionState } from '@/lib/utils/subscription';
 
-export type FeatureType = 'notification_channel' | 'integration' | 'tool';
+export type FeatureType = 'notification_channel' | 'integration' | 'schedule' | 'limit';
 
 export interface UseFeaturesReturn {
     loading: boolean;
-    checkPermission: (type: FeatureType, key: string) => boolean;
+    subscriptionState: SubscriptionState;
+    checkPermission: (type: FeatureType, key: string, value?: any) => boolean;
     getUpgradeMessage: (type: FeatureType, key: string) => string;
-    isToolEnabled: (toolId: string) => boolean;
-    getToolLimits: (toolId: string) => {
-        creditsPerUrl: number;
-        dailyLimit?: number;
-        monthlyLimit?: number;
-        rateLimit?: { requestsPerMinute: number };
-    } | null;
 }
 
 export function useFeatures(): UseFeaturesReturn {
-    const { user, limits: _limits, subscriptionStatus, loading } = useUserContext();
+    const { user, limits, subscriptionStatus, loading } = useUserContext();
+    const subState = getSubscriptionState(subscriptionStatus);
 
     /**
-     * Check if a specific feature is allowed for the current user
+     * Check if a specific feature or limit is allowed
      */
-    const checkPermission = (type: FeatureType, key: string): boolean => {
-        // 1. Loading state - default to locked (safe fail)
+    const checkPermission = (type: FeatureType, key: string, value?: any): boolean => {
         if (loading || !user) return false;
 
-        // 2. Trial Override - Everything is unlocked during valid trial
-        const subState = getSubscriptionState(subscriptionStatus);
+        // 1. Full Access during active trial or for enterprise
         if (subState === SubscriptionState.TRIAL_ACTIVE) return true;
 
-        // 3. Determine Effective Plan Tier
         let planTier = user.plan || 'starter';
-
-        // Check if subscription plan is higher (e.g. just upgraded but user profile not fully synced yet)
         if (subscriptionStatus?.planId) {
             const subPlan = subscriptionStatus.planId.toLowerCase();
-            if (subPlan.includes('business') || subPlan.includes('enterprise')) {
-                planTier = 'business';
-            } else if (subPlan.includes('professional') && planTier === 'starter') {
-                planTier = 'professional';
-            }
+            if (subPlan.includes('business') || subPlan.includes('enterprise')) planTier = 'business';
+            else if (subPlan.includes('professional') && planTier === 'starter') planTier = 'professional';
         }
 
-        // 4. Admin/Enterprise Override
-        if (planTier === 'enterprise') return true;
+        if (planTier === 'enterprise' || planTier === 'business') {
+            // Business/Enterprise still gated by specific numeric limits from the API if applicable
+            // but generally have access to all feature types.
+        }
 
-        // 5. Specific Feature Logic
         switch (type) {
             case 'notification_channel':
                 return checkNotificationPermission(key, planTier);
             case 'integration':
                 return checkIntegrationPermission(key, planTier);
-            case 'tool':
-                return true; // Tools are generally available, limits handled by credits
+            case 'schedule':
+                return checkSchedulePermission(key, value, planTier);
+            case 'limit':
+                return checkLimitPermission(key, value);
             default:
                 return false;
         }
@@ -68,64 +58,63 @@ export function useFeatures(): UseFeaturesReturn {
     // --- Internal Logic Helpers ---
 
     const checkNotificationPermission = (key: string, plan: string): boolean => {
-        if (plan === 'business') return true; // Business gets all channels
-
-        if (plan === 'professional') {
-            // Professional gets Telegram & Discord, but NOT Slack
-            if (key === 'slack') return false;
-            return true;
-        }
-
-        return false; // Starter gets no external channels
+        if (plan === 'business' || plan === 'enterprise') return true;
+        if (plan === 'professional') return key !== 'slack';
+        return false;
     };
 
     const checkIntegrationPermission = (key: string, plan: string): boolean => {
-        if (plan === 'business') return true; // Business gets all integrations
+        if (plan === 'business' || plan === 'enterprise') return true;
+        if (plan === 'professional') return ['google_sheets', 'google_drive'].includes(key);
+        return false;
+    };
 
-        if (plan === 'professional') {
-            // Professional gets Google Integrations
-            if (key === 'google_sheets' || key === 'google_drive') return true;
-            return false;
+    const checkSchedulePermission = (key: string, value: any, plan: string): boolean => {
+        // key can be 'frequency', 'creation', etc.
+        if (key === 'frequency') {
+            const defaultAllowed = plan === 'starter' ? ['daily', 'weekly', 'monthly'] : ['hourly', 'daily', 'weekly', 'monthly'];
+            const allowedFrequencies = limits?.allowedFrequencies || defaultAllowed;
+            return allowedFrequencies.includes(value);
         }
 
-        return false; // Starter gets no integrations
+        if (key === 'creation') {
+            const defaultMax = plan === 'starter' ? 5 : plan === 'professional' ? 20 : 100;
+            const maxSchedules = limits?.maxSchedules || defaultMax;
+            const currentSchedules = value || 0;
+            return currentSchedules < maxSchedules;
+        }
+
+        return true;
+    };
+
+    const checkLimitPermission = (key: string, value: any): boolean => {
+        if (!limits) return true; // Fallback if limits not loaded
+
+        const limitValue = (limits as any)[key];
+        if (typeof limitValue === 'number') {
+            return value < limitValue;
+        }
+        return true;
     };
 
     /**
      * Get upgrade message for locked features
      */
     const getUpgradeMessage = (type: FeatureType, key: string): string => {
-        if (key === 'slack' || type === 'integration' && !['google_sheets', 'google_drive'].includes(key)) {
+        if (type === 'limit') return "Upgrade your plan to increase limits";
+        if (key === 'slack' || (type === 'integration' && !['google_sheets', 'google_drive'].includes(key))) {
             return "Upgrade to Business Plan";
+        }
+        if (type === 'schedule' && key === 'frequency') {
+            return "Upgrade for higher frequency scheduling";
         }
         return "Upgrade to Professional Plan";
     };
 
-    /**
-     * Legacy tool check (kept for compatibility)
-     */
-    const isToolEnabled = (_toolId: string): boolean => true;
-
-    /**
-     * Get limits for a tool from the loaded plan limits
-     */
-    const getToolLimits = (_toolId: string) => {
-        // We don't have per-tool limits in the 'limits' object structure exactly as before
-        // But we can return defaults or mapping if needed. 
-        // For now, returning null/defaults as most logic is credit-based.
-        return {
-            creditsPerUrl: 1, // Default
-            dailyLimit: undefined,
-            monthlyLimit: undefined,
-            rateLimit: { requestsPerMinute: 60 }
-        };
-    };
-
     return {
         loading,
+        subscriptionState: subState,
         checkPermission,
         getUpgradeMessage,
-        isToolEnabled,
-        getToolLimits,
     };
 }

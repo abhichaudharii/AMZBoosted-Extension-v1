@@ -74,9 +74,9 @@ Essential for converting professional sellers.
 Proof of a living, breathing product is essential for SaaS trust.
 - **Consistent Updates**: History of monthly minor updates and weekly patch fixes.
 - **Growth Pattern**:
-    - **v1.0.0**: Initial Release (Initial 8 regions).
-    - **v1.1.0/1.2.0**: Added Price Tracker, Listing Analyzer, and Airtable integration.
-    - **v1.3.0**: Recent introduction of Bulk URL Runner and AI Sentiment Classifier.
+    - **v1.0.0**: Initial Release with core Market Intelligence tools.
+    - **v1.1.0**: Added Advanced Scheduler and Background Execution Engine.
+    - **v1.2.0**: Introduced Rufus AI Agent and ASIN-X Explorer refinements.
 - **Future Ready**: Built with an extensible architecture ready for the next wave of Amazon API changes.
 
 ---

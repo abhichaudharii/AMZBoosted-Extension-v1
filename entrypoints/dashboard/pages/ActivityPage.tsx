@@ -137,9 +137,9 @@ export const ActivityPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0A0A0B] p-6 lg:p-8 animate-fade-in relative overflow-hidden text-foreground">
-      {/* Ambient Background */}
-      <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[#FF6B00]/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-[#FF8533]/5 rounded-full blur-[120px] pointer-events-none" />
+      {/* Ambient Background - Relaxed Neutral Glow */}
+      <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-slate-500/2 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-slate-400/2 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto space-y-8 relative z-10">
         {/* Header */}

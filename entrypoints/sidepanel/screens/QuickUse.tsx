@@ -89,8 +89,20 @@ export const QuickUse: React.FC<QuickUseProps> = ({ tool, onBack }) => {
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-6 pb-20">
           {!isStateLoaded ? (
-              <div className="flex items-center justify-center py-20">
-                  <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+              <div className="flex flex-col items-center justify-center py-20 animate-in fade-in duration-700">
+                  <div className="relative mb-6">
+                      <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
+                      <img 
+                          src="/amzboosted_logo.png" 
+                          alt="Loading" 
+                          className="h-12 w-12 relative z-10 animate-pulse" 
+                      />
+                  </div>
+                  <div className="flex gap-1.5">
+                      <div className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]"></div>
+                      <div className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]"></div>
+                      <div className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce"></div>
+                  </div>
               </div>
           ) : !isProcessing ? (
             <ToolRenderer

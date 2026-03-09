@@ -61,10 +61,9 @@ export const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({
     notifyOnStart: false,
     notifyOnSuccess: true,
     notifyOnFail: true,
-    alertOnPriceDrop: true,
-    priceDropThreshold: 5,
     alertOnStockChange: false,
-    googleDriveEnabled: false
+    googleDriveEnabled: false,
+    dayOfMonth: 1
   });
 
   const editMode = !!scheduleToEdit;
@@ -116,7 +115,8 @@ export const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({
         alertOnStockChange: scheduleToEdit.options?.alertOnStockChange || false,
         googleDriveEnabled: scheduleToEdit.options?.googleDriveEnabled || false,
         startDate: scheduleToEdit.options?.startDate || scheduleToEdit.startDate || '',
-        endDate: scheduleToEdit.options?.endDate || scheduleToEdit.endDate || ''
+        endDate: scheduleToEdit.options?.endDate || scheduleToEdit.endDate || '',
+        dayOfMonth: scheduleToEdit.dayOfMonth || scheduleToEdit.options?.dayOfMonth || 1
       });
       setStep(1); 
     } else {
@@ -138,7 +138,8 @@ export const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({
         notifyOnStart: false,
         notifyOnSuccess: true,
         notifyOnFail: true,
-        googleDriveEnabled: false
+        googleDriveEnabled: false,
+        dayOfMonth: 1
       });
       setStep(1);
     }
@@ -159,6 +160,10 @@ export const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({
       }
       if (formData.frequency === 'weekly' && formData.days.length === 0) {
         toast.error('Please select at least one day');
+        return;
+      }
+      if (formData.frequency === 'monthly' && (!formData.dayOfMonth || formData.dayOfMonth < 1)) {
+        toast.error('Please select a day of the month');
         return;
       }
       if (formData.frequency === 'hourly' && formData.interval < 1) {
@@ -243,18 +248,45 @@ export const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({
           urlsList = rawUrls ? rawUrls.split('\n').filter((item) => item.trim()) : [];
       }
 
-      // Calculate nextRunAt
+      // Calculate nextRunAt & Cron Expression
       let nextRunAt = new Date();
+      const [hours, minutes] = formData.time.split(':').map(Number);
+      nextRunAt.setHours(hours, minutes, 0, 0);
+
+      let cronExpression = '';
+
       if (formData.frequency === 'hourly') {
+        nextRunAt = new Date(); // Reset to now for relative hourly
         nextRunAt.setHours(nextRunAt.getHours() + formData.interval);
-      } else {
-        const [hours, minutes] = formData.time.split(':').map(Number);
-        nextRunAt.setHours(hours, minutes, 0, 0);
+        cronExpression = `0 */${formData.interval} * * *`;
+      } else if (formData.frequency === 'daily') {
+        if (nextRunAt <= new Date()) nextRunAt.setDate(nextRunAt.getDate() + 1);
+        cronExpression = `${minutes} ${hours} * * *`;
+      } else if (formData.frequency === 'weekly') {
+        // Find next day in the selected days
+        const dayMap: Record<string, number> = { 'sun': 0, 'mon': 1, 'tue': 2, 'wed': 3, 'thu': 4, 'fri': 5, 'sat': 6 };
+        const selectedDays = formData.days.map(d => dayMap[d.toLowerCase()]).sort();
         
-        // If the scheduled time has passed for today, run tomorrow
-        if (nextRunAt <= new Date()) {
-            nextRunAt.setDate(nextRunAt.getDate() + 1);
+        if (selectedDays.length > 0) {
+          const currentDay = nextRunAt.getDay();
+          let nextDay = selectedDays.find(d => d > currentDay || (d === currentDay && nextRunAt > new Date()));
+          
+          if (nextDay === undefined) nextDay = selectedDays[0];
+          
+          let daysUntil = nextDay - currentDay;
+          if (daysUntil < 0 || (daysUntil === 0 && nextRunAt <= new Date())) daysUntil += 7;
+          
+          nextRunAt.setDate(nextRunAt.getDate() + daysUntil);
+          cronExpression = `${minutes} ${hours} * * ${selectedDays.join(',')}`;
         }
+      } else if (formData.frequency === 'monthly') {
+        const targetDay = formData.dayOfMonth || 1;
+        nextRunAt.setDate(targetDay);
+        
+        if (nextRunAt <= new Date()) {
+          nextRunAt.setMonth(nextRunAt.getMonth() + 1);
+        }
+        cronExpression = `${minutes} ${hours} ${targetDay} * *`;
       }
 
       const scheduleData = {
@@ -267,11 +299,13 @@ export const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({
         urls: urlsList,
         status: editMode && scheduleToEdit ? (scheduleToEdit.enabled ? 'active' : 'paused') : 'active',
         days: formData.days,
+        dayOfMonth: formData.dayOfMonth,
         dataPeriod: formData.dataPeriod,
         outputFormat: formData.outputFormat,
         interval: formData.interval,
         enabled: editMode && scheduleToEdit ? scheduleToEdit.enabled : true,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        cronExpression,
         notifyOnComplete: true,
         userId: 'user', 
         createdAt: editMode && scheduleToEdit ? scheduleToEdit.createdAt : new Date().toISOString(),
@@ -291,7 +325,8 @@ export const CreateScheduleDialog: React.FC<CreateScheduleDialogProps> = ({
             alertOnStockChange: formData.alertOnStockChange,
             googleDriveEnabled: formData.googleDriveEnabled,
             startDate: formData.startDate,
-            endDate: formData.endDate
+            endDate: formData.endDate,
+            dayOfMonth: formData.dayOfMonth
         }
       };
 

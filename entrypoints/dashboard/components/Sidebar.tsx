@@ -45,7 +45,12 @@ interface NavItem {
   icon: any;
   path: string;
   children?: NavItem[];
-  comingSoon?: boolean; // Added comingSoon property
+  comingSoon?: boolean;
+}
+
+interface NavSection {
+  label: string;
+  items: NavItem[];
 }
 
 interface SidebarProps {
@@ -121,15 +126,15 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
         'group relative w-full flex items-center gap-3 rounded-xl text-sm font-medium transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-[#FF6B00]/50 overflow-hidden',
         collapsed ? 'justify-center p-2 my-1 aspect-square' : 'px-4 py-2.5 my-1',
         isActive
-          ? 'bg-[#FF6B00]/10 text-[#FF6B00]' 
+          ? 'bg-white/5 text-white' 
           : 'text-gray-400 hover:bg-white/5 hover:text-white',
         depth > 0 && !collapsed && 'pl-10 text-xs',
         item.comingSoon && "opacity-60 grayscale hover:bg-transparent cursor-default"
       )}
     >
-      {/* Active Indicator Glow */}
+      {/* Active Indicator */}
       {isActive && (
-          <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-[#FF6B00] shadow-[0_0_10px_2px_rgba(255,107,0,0.5)]" />
+          <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#FF6B00]" />
       )}
 
       {/* Icon or Lock */}
@@ -137,7 +142,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
           <Icon className={cn(
             'shrink-0 transition-all duration-300',
             collapsed ? 'h-4 w-4' : 'h-4 w-4',
-            isActive ? 'text-[#FF6B00] drop-shadow-[0_0_5px_rgba(255,107,0,0.5)]' : 'text-gray-500 group-hover:text-white'
+            isActive ? 'text-white' : 'text-gray-500 group-hover:text-white'
           )} />
           {item.comingSoon && (
               <div className="absolute -bottom-1 -right-1 bg-[#1A1A1C] rounded-full p-[1px] border border-white/10">
@@ -227,55 +232,73 @@ export const Sidebar: React.FC<SidebarProps> = ({ activePath, onNavigate, collap
   const [recentToolIds, setRecentToolIds] = useState<string[]>([]);
   
   // Base navigation items
-  const navItems = useMemo(() => {
-    const baseItems: NavItem[] = [
-        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/' },
-        // Dynamic Tools Item
-        {
-            id: 'tools',
-            label: 'Tools',
-            icon: Zap,
-            path: '/tools',
-            children: tools
-                .filter(t => t.enabled)
-                .sort((a, b) => {
-                    // 1. Favorites First
-                    const aFav = isFavorite(a.id);
-                    const bFav = isFavorite(b.id);
-                    if (aFav && !bFav) return -1;
-                    if (!aFav && bFav) return 1;
+  const navSections = useMemo((): NavSection[] => {
+    const toolsItem: NavItem = {
+      id: 'tools',
+      label: 'Tools & AI',
+      icon: Zap,
+      path: '/tools',
+      children: tools
+        .filter(t => t.enabled)
+        .sort((a, b) => {
+          const aFav = isFavorite(a.id);
+          const bFav = isFavorite(b.id);
+          if (aFav && !bFav) return -1;
+          if (!aFav && bFav) return 1;
+          const aRecent = recentToolIds.indexOf(a.id);
+          const bRecent = recentToolIds.indexOf(b.id);
+          if (aRecent > -1 && bRecent > -1) return aRecent - bRecent;
+          if (aRecent > -1) return -1;
+          if (bRecent > -1) return 1;
+          return 0;
+        })
+        .map(tool => ({
+          id: tool.id,
+          label: tool.name,
+          icon: tool.icon,
+          path: `/tools/${tool.id}`,
+          comingSoon: tool.comingSoon
+        }))
+    };
 
-                    // 2. Recents Next
-                    const aRecent = recentToolIds.indexOf(a.id);
-                    const bRecent = recentToolIds.indexOf(b.id);
-                    
-                    if (aRecent > -1 && bRecent > -1) return aRecent - bRecent; // Lower index = more recent
-                    if (aRecent > -1) return -1;
-                    if (bRecent > -1) return 1;
-
-                    return 0; // Default order
-                })
-                .map(tool => ({
-                    id: tool.id,
-                    label: tool.name,
-                    icon: tool.icon,
-                    path: `/tools/${tool.id}`,
-                    comingSoon: tool.comingSoon // Pass comingSoon flag
-                }))
-        },
-        { id: 'reports', label: 'Reports', icon: FileText, path: '/reports' },
-        { id: 'schedules', label: 'Schedules', icon: Calendar, path: '/schedules' },
-        { id: 'exports', label: 'Exports', icon: Download, path: '/exports' },
-        { id: 'activity', label: 'Activity Log', icon: Activity, path: '/activity' },
-        { id: 'credit-history', label: 'Credit History', icon: Zap, path: '/credit-history' },
-        { id: 'integrations', label: 'Integrations', icon: Plug, path: '/integrations' },
-        { id: 'notifications', label: 'Notifications', icon: BellIcon, path: '/notifications' },
-        { id: 'billing', label: 'Billing', icon: CreditCard, path: '/billing' },
-        { id: 'account', label: 'Account', icon: Shield, path: '/account' },
-        { id: 'changelog', label: 'Changelog', icon: BookOpen, path: '/changelog' },
-        { id: 'support', label: 'Support', icon: LifeBuoy, path: '/support' },
+    return [
+      {
+        label: 'General',
+        items: [
+          { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/' },
+          { id: 'reports', label: 'Reports', icon: FileText, path: '/reports' },
+        ]
+      },
+      {
+        label: 'Intelligence',
+        items: [toolsItem]
+      },
+      {
+        label: 'Workflows',
+        items: [
+          { id: 'schedules', label: 'Schedules', icon: Calendar, path: '/schedules' },
+          { id: 'exports', label: 'Exports', icon: Download, path: '/exports' },
+          { id: 'activity', label: 'Activity Log', icon: Activity, path: '/activity' },
+        ]
+      },
+      {
+        label: 'Account & Billing',
+        items: [
+          { id: 'credit-history', label: 'Credit History', icon: Zap, path: '/credit-history' },
+          { id: 'integrations', label: 'Integrations', icon: Plug, path: '/integrations' },
+          { id: 'notifications', label: 'Notifications', icon: BellIcon, path: '/notifications' },
+          { id: 'billing', label: 'Billing', icon: CreditCard, path: '/billing' },
+          { id: 'account', label: 'Account', icon: Shield, path: '/account' },
+        ]
+      },
+      {
+        label: 'Support',
+        items: [
+          { id: 'changelog', label: 'Changelog', icon: BookOpen, path: '/changelog' },
+          { id: 'support', label: 'Support', icon: LifeBuoy, path: '/support' },
+        ]
+      }
     ];
-    return baseItems;
   }, [tools, isFavorite, recentToolIds]);
 
   // FIX: Use prop instead of local state
@@ -342,10 +365,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ activePath, onNavigate, collap
         {/* LOGO (Only when expanded) */}
         <div className={cn(
            "flex items-center transition-all duration-300 ease-in-out", 
-           collapsed ? "gap-0" : "gap-2.5 px-1"
+           collapsed ? "gap-0" : "gap-3 px-1"
         )}>
-            <div className="bg-[#FF6B00] p-1.5 rounded-xl shadow-[0_0_15px_-3px_rgba(255,107,0,0.4)] flex-shrink-0 z-10">
-                <Zap className={cn("text-white fill-white transition-all duration-300", collapsed ? "h-5 w-5" : "h-4 w-4")} />
+            <div className={cn(
+                "flex-shrink-0 transition-all duration-300",
+                collapsed ? "w-8 h-8" : "w-10 h-10"
+            )}>
+                <img 
+                    src="/amzboosted_logo.png" 
+                    alt="AMZBoosted" 
+                    className="w-full h-full object-contain"
+                />
             </div>
             
             <div className={cn(
@@ -363,18 +393,34 @@ export const Sidebar: React.FC<SidebarProps> = ({ activePath, onNavigate, collap
       {/* Navigation Area */}
       <ScrollArea className="flex-1 py-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
         <nav className={cn("space-y-1 transition-all duration-300", collapsed ? "px-2" : "px-3")}>
-          {navItems.map((item) => (
-            <SidebarItem
-              key={item.id}
-              item={item}
-              activePath={activePath}
-              collapsed={collapsed}
-              expandedItems={expandedItems}
-              toggleExpanded={toggleExpanded}
-              onNavigate={onNavigate}
-              isFavorite={isFavorite}
-              toggleFavorite={toggleFavorite}
-            />
+          {navSections.map((section, idx) => (
+            <div key={section.label} className={cn(idx > 0 && "mt-6")}>
+              {!collapsed && (
+                <div className="px-4 mb-2">
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-600">
+                    {section.label}
+                  </span>
+                </div>
+              )}
+              <div className="space-y-1">
+                {section.items.map((item) => (
+                  <SidebarItem
+                    key={item.id}
+                    item={item}
+                    activePath={activePath}
+                    collapsed={collapsed}
+                    expandedItems={expandedItems}
+                    toggleExpanded={toggleExpanded}
+                    onNavigate={onNavigate}
+                    isFavorite={isFavorite}
+                    toggleFavorite={toggleFavorite}
+                  />
+                ))}
+              </div>
+              {idx < navSections.length - 1 && !collapsed && (
+                 <div className="mx-4 mt-6 h-px bg-white/5 opacity-50" />
+              )}
+            </div>
           ))}
         </nav>
       </ScrollArea>

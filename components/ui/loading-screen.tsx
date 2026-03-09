@@ -3,9 +3,9 @@ import React from 'react';
 // Helper for safe logo loading
 const getLogoUrl = () => {
   try {
-    return chrome.runtime.getURL('icon/128.png');
+    return chrome.runtime.getURL('amzboosted_logo.png');
   } catch (e) {
-    return '/icon/128.png';
+    return '/amzboosted_logo.png';
   }
 };
 

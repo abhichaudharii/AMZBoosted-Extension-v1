@@ -33,7 +33,6 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({
   title,
-  icon: Icon,
   showBack = false,
   onBack,
   showMenu = false,
@@ -58,11 +57,13 @@ export const Navbar: React.FC<NavbarProps> = ({
         )}
         
         <div className="flex items-center gap-3 overflow-hidden">
-          {Icon && (
-            <div className="p-2 bg-primary/10 rounded-lg shrink-0">
-              <Icon className="h-4 w-4 text-primary" />
-            </div>
-          )}
+          <div className="relative shrink-0 flex items-center justify-center">
+            <img 
+              src="/amzboosted_logo.png" 
+              alt="Logo" 
+              className="h-8 w-8 object-contain"
+            />
+          </div>
           <div className="flex flex-col overflow-hidden">
             <h1 className="text-sm font-extrabold truncate leading-none text-white tracking-tight">{title}</h1>
           </div>

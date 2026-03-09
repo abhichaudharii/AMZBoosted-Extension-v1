@@ -81,8 +81,27 @@ const AppRoutes: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="min-h-screen flex flex-col items-center justify-center bg-[#0A0A0B]">
+                <div className="relative mb-8 group">
+                    {/* Glow effect */}
+                    <div className="absolute -inset-4 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/30 transition-all duration-500 animate-pulse" />
+                    
+                    <img 
+                        src="/amzboosted_logo.png" 
+                        alt="AMZBoosted" 
+                        className="w-16 h-16 relative z-10 object-contain drop-shadow-2xl animate-in zoom-in-50 duration-500"
+                    />
+                </div>
+                
+                <div className="relative">
+                    <div className="h-1 w-32 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-primary to-[#FF914D] w-1/2 rounded-full animate-progress" />
+                    </div>
+                </div>
+                
+                <p className="mt-4 text-xs font-medium text-gray-400 tracking-widest uppercase animate-pulse">
+                    Initializing Intelligence
+                </p>
             </div>
         );
     }

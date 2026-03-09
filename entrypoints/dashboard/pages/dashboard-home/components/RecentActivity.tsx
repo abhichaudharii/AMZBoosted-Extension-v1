@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Activity, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface RecentActivityProps {
   tasks: any[];
@@ -13,101 +14,104 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ tasks }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-[#1A1A1C]/50 backdrop-blur-md rounded-xl border border-white/5 overflow-hidden transition-all hover:border-white/10 group flex flex-col h-full">
-      <div className="p-6 border-b border-white/5 flex items-center justify-between">
-        <div>
-           <div className="flex items-center gap-2 text-lg font-bold text-white">
-              <div className="p-1.5 rounded-lg bg-[#FF6B00]/10 text-[#FF6B00] group-hover:scale-110 transition-transform">
-                <Activity className="h-5 w-5" />
-              </div>
-              Recent Activity
-            </div>
-            <p className="text-sm text-gray-400 mt-1">Latest task executions</p>
+    <div className="bg-[#0A0A0B]/60 backdrop-blur-xl rounded-3xl border border-white/5 overflow-hidden transition-all hover:border-white/10 group flex flex-col relative">
+      <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between relative z-10">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform duration-500 shadow-[0_0_20px_-5px_rgba(255,107,0,0.3)]">
+            <Activity className="h-4 w-4" />
+          </div>
+          <h3 className="text-lg font-black text-white tracking-tight">Recent Activity</h3>
         </div>
         <Button
           variant="ghost"
           size="sm"
           onClick={() => navigate('/activity')}
-          className="text-gray-400 hover:text-white hover:bg-white/5"
+          className="text-xs h-8 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl font-bold px-4"
         >
           View All
         </Button>
       </div>
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden relative z-10">
         {tasks.length > 0 ? (
           <div className="divide-y divide-white/5">
             {tasks.slice(0, 5).map((task) => (
               <div
                 key={task.id}
-                className="p-4 hover:bg-white/5 transition-colors cursor-pointer"
+                className="px-6 py-4 hover:bg-white/[0.03] transition-all cursor-pointer group/item relative overflow-hidden"
                 onClick={() => navigate('/activity')}
               >
-                <div className="flex items-start gap-4">
+                {/* Ambient Glow on Hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity duration-500" />
+                
+                <div className="flex items-start gap-5 relative z-10">
                   <div className="mt-0.5">
                     {task.status === 'completed' ? (
-                      <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                      <div className="h-10 w-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 shadow-[0_0_15px_-5px_rgba(16,185,129,0.3)]">
+                        <CheckCircle2 className="h-5 w-5 text-emerald-500" />
                       </div>
                     ) : task.status === 'failed' ? (
-                      <div className="h-8 w-8 rounded-lg bg-red-500/10 flex items-center justify-center border border-red-500/20">
-                        <XCircle className="h-4 w-4 text-red-500" />
-                      </div>
-                    ) : task.status === 'processing' ? (
-                      <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                        <Clock className="h-4 w-4 text-blue-500 animate-pulse" />
+                      <div className="h-10 w-10 rounded-2xl bg-red-500/10 flex items-center justify-center border border-red-500/20 shadow-[0_0_15px_-5px_rgba(239,68,68,0.3)]">
+                        <XCircle className="h-5 w-5 text-red-500" />
                       </div>
                     ) : (
-                      <div className="h-8 w-8 rounded-lg bg-yellow-500/10 flex items-center justify-center border border-yellow-500/20">
-                        <Clock className="h-4 w-4 text-yellow-500" />
+                      <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-[0_0_15px_-5px_rgba(255,107,0,0.3)]">
+                        <Clock className={cn("h-5 w-5 text-primary", task.status === 'processing' && "animate-pulse")} />
                       </div>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-white truncate group-hover:text-[#FF6B00] transition-colors">{task.toolName}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs text-gray-500">
+                        <p className="text-[15px] font-bold text-white truncate group-hover/item:text-primary transition-colors duration-300 tracking-tight">
+                            {task.toolName}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1.5">
+                          <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest px-2 py-0.5 rounded bg-white/5 border border-white/10">
                             {task.marketplace}
                           </span>
-                          <span className="text-xs text-gray-600">•</span>
-                          <span className="text-xs text-gray-500">
-                            {task.urlCount} URL{task.urlCount !== 1 ? 's' : ''}
+                          <span className="text-[10px] text-slate-500 font-medium">
+                            {task.urlCount} TARGET{task.urlCount !== 1 ? 'S' : ''}
                           </span>
                         </div>
                       </div>
                       <Badge
                         variant="outline"
-                        className={`text-[10px] h-5 px-2 border-transparent ${
-                          task.status === 'completed' ? 'bg-emerald-500/10 text-emerald-500' :
-                          task.status === 'failed' ? 'bg-red-500/10 text-red-500' :
-                          'bg-gray-500/10 text-gray-400'
-                        }`}
+                        className={cn(
+                          "text-[9px] h-5 px-2 border font-black tracking-widest rounded-lg transition-all",
+                          task.status === 'completed' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' :
+                          task.status === 'failed' ? 'bg-red-500/10 text-red-500 border-red-500/30' :
+                          'bg-primary/10 text-primary border-primary/30'
+                        )}
                       >
                         {task.status.toUpperCase()}
                       </Badge>
                     </div>
-                    <p className="text-xs text-gray-600 mt-1.5 flex items-center gap-1">
-                       <Clock className="w-3 h-3" />
-                      {format(new Date(task.createdAt), 'MMM dd, HH:mm')}
-                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                        <p className="text-[10px] text-slate-500 font-bold flex items-center gap-1.5">
+                            <Clock className="w-3 h-3 text-slate-600" />
+                            {format(new Date(task.createdAt), 'MMM dd, HH:mm')}
+                        </p>
+                    </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center h-64 text-center p-6">
-            <Activity className="h-12 w-12 text-gray-700 mb-3" />
-            <p className="text-sm font-medium text-gray-500">No recent activity</p>
+          <div className="flex flex-col items-center justify-center h-72 text-center p-8 relative z-10">
+            <div className="h-16 w-16 rounded-3xl bg-white/5 flex items-center justify-center mb-6 border border-white/10">
+                <Activity className="h-8 w-8 text-slate-700" />
+            </div>
+            <p className="text-base font-bold text-slate-400">No activity logged yet</p>
+            <p className="text-xs text-slate-500 mt-2 max-w-[200px]">Run your first automation to see results here.</p>
             <Button
               variant="outline"
               size="sm"
-              className="mt-4 border-white/10 bg-white/5 hover:bg-white/10 text-white"
+              className="mt-6 border-white/10 bg-white/5 hover:bg-primary/20 hover:text-primary hover:border-primary/40 text-white rounded-xl px-6 h-9 transition-all"
               onClick={() => navigate('/tools')}
             >
-              Run a Tool
+              Launch Tool
             </Button>
           </div>
         )}

@@ -42,6 +42,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         </div>
         
         <div className="flex flex-wrap gap-3 items-center">
+
             {/* Period Filter Tabs - Custom Style */}
             <div className="bg-[#1A1A1C] border border-white/10 p-1 rounded-lg flex items-center">
                 {(['today', 'yesterday', 'week', 'month', 'all'] as const).map((p) => (

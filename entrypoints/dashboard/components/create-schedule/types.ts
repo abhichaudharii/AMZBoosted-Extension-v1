@@ -16,6 +16,7 @@ export interface ScheduleFormData {
     dataPeriod: string; // 'current_week' | 'last_week' | 'yesterday' | 'last_7_days' | etc.
     outputFormat: 'csv' | 'json' | 'excel';
     interval: number;
+    dayOfMonth?: number;
     reportType: string;
     startDate?: string;
     endDate?: string;
@@ -54,6 +55,7 @@ export interface Schedule {
     interval?: number;
     startDate?: string;
     endDate?: string;
+    dayOfMonth?: number;
     enabled?: boolean;
 }
 

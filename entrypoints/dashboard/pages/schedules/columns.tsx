@@ -78,16 +78,16 @@ export const getSchedulesColumns = ({
         const Flag = getFlagByMarketplace(schedule.marketplace);
 
         return (
-            <div className="flex flex-col gap-1">
-                <span className="font-medium text-white">{row.getValue('name')}</span>
+            <div className="flex flex-col gap-1.5 py-1">
+                <span className="font-bold text-[15px] text-white group-hover:text-primary transition-colors duration-300 tracking-tight">{row.getValue('name')}</span>
                 <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-gray-400 px-1.5 py-0.5 rounded bg-white/5 border border-white/10 inline-block">
+                    <span className="text-[10px] text-gray-400 px-2 py-0.5 rounded-lg bg-white/5 border border-white/10 inline-block font-bold group-hover:bg-white/10">
                         {schedule.tool}
                     </span>
                      {schedule.marketplace && (
-                         <div className="flex items-center gap-1 text-[10px] text-gray-400 bg-white/5 px-1.5 py-0.5 rounded border border-white/10">
-                            {Flag && <Flag className="w-2.5 h-2.5 rounded-sm" />}
-                            <span className="uppercase">{schedule.marketplace}</span>
+                         <div className="flex items-center gap-1.5 text-[10px] text-gray-400 bg-white/5 px-2 py-0.5 rounded-lg border border-white/10 group-hover:bg-white/10">
+                            {Flag && <Flag className="w-3 h-3 rounded-sm shadow-sm" />}
+                            <span className="uppercase tracking-widest font-black opacity-80">{schedule.marketplace}</span>
                          </div>
                     )}
                 </div>
@@ -104,12 +104,13 @@ export const getSchedulesColumns = ({
         <Badge
           variant="outline"
           className={cn(
-            'capitalize text-[10px] h-5 px-2 border-transparent font-medium',
+            'capitalize text-[10px] h-5 px-2 border font-black tracking-widest rounded-lg',
             enabled
-              ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-              : 'bg-gray-500/10 text-gray-500 border-gray-500/20'
+              ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30 shadow-emerald-500/20 shadow-md'
+              : 'bg-gray-500/10 text-gray-500 border-gray-500/30'
           )}
         >
+          <div className={cn("w-1.5 h-1.5 rounded-full mr-1.5 animate-pulse", enabled ? "bg-emerald-500" : "bg-gray-500")} />
           {enabled ? 'Active' : 'Paused'}
         </Badge>
       );
@@ -180,10 +181,11 @@ export const getSchedulesColumns = ({
                                 </div>
                             )}
 
-                             {/* Cron Details */}
-                             {schedule.cronExpression && (
-                                <div className="flex items-center gap-2 text-xs text-gray-400 font-mono bg-white/5 px-2 py-1 rounded">
-                                    <span>{schedule.cronExpression}</span>
+                             {/* Monthly Details */}
+                             {schedule.frequency.toLowerCase() === 'monthly' && (
+                                <div className="flex items-center gap-2 text-xs text-gray-400">
+                                    <Calendar className="w-3 h-3 text-amber-500" />
+                                    <span>Day {row.original.dayOfMonth || 1} of month</span>
                                 </div>
                             )}
                         </div>
@@ -206,7 +208,7 @@ export const getSchedulesColumns = ({
                     <span className="text-[10px] text-muted-foreground uppercase w-8">Next:</span>
                     <span className={cn(
                         "font-medium",
-                        next ? "text-[#FF6B00]" : "text-gray-500"
+                        next ? "text-white/90" : "text-gray-500"
                     )}>
                         {next ? format(new Date(next), 'MMM dd, HH:mm') : 'Pending'}
                     </span>
@@ -238,12 +240,12 @@ export const getSchedulesColumns = ({
                 }}
                 disabled={isRunning}
                 className={cn(
-                    "h-7 text-[10px] px-2 gap-1 border-white/10 bg-transparent hover:bg-white/5",
-                    isRunning ? "text-[#FF6B00] border-[#FF6B00]/30" : "text-gray-300 hover:text-[#FF6B00]"
+                    "h-8 text-[11px] px-3 gap-1.5 border-white/10 bg-white/5 hover:bg-primary/20 hover:border-primary/40 hover:text-primary transition-all duration-300 font-bold rounded-xl",
+                    isRunning ? "text-primary border-primary/40 bg-primary/10 shadow-[0_0_15px_-5px_rgba(255,107,0,0.3)]" : "text-gray-300"
                 )}
             >
-               {isRunning ? <Clock className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3" />}
-               {isRunning ? 'Running' : 'Run'}
+               {isRunning ? <Clock className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
+               {isRunning ? 'Running' : 'Run Now'}
             </Button>
 
             <DropdownMenu>

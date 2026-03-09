@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { secureStorage } from '@/lib/storage/secure-storage';
 import { useSchedules } from '@/lib/hooks/useSchedules';
 import { useRemoteTools } from '@/lib/hooks/useRemoteTools';
 import { usePageState } from '@/lib/hooks/usePersistedState';
-import { checkAccess } from '@/lib/utils/access-control';
 import { SubscriptionState } from '@/lib/utils/subscription';
+import { useFeatures } from '@/lib/hooks/useFeatures';
 import type { Schedule as ScheduleType } from '@/lib/db/schema';
 
 // UI representation of a schedule (mapped from database Schedule)
@@ -25,6 +24,7 @@ export interface UISchedule {
     outputFormat: string;
     targetPreview: string;
     time?: string;
+    dayOfMonth?: number;
     days?: string[];
     timezone?: string;
     cronExpression?: string;
@@ -67,22 +67,9 @@ export const useSchedulesLogic = () => {
     const [runningSchedules, setRunningSchedules] = useState<Set<string>>(new Set());
     const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
-    // Restriction State
+    // Gating Hooks
+    const { checkPermission: hasFeature, subscriptionState } = useFeatures();
     const [restrictionOpen, setRestrictionOpen] = useState(false);
-    const [restrictionState, setRestrictionState] = useState<SubscriptionState>(SubscriptionState.NO_PLAN);
-
-    const checkPermission = async (_feature: string): Promise<boolean> => {
-        const result = await secureStorage.get('subscriptionStatus');
-        const status = result.subscriptionStatus;
-        const { allowed, reason } = checkAccess(status);
-
-        if (!allowed && reason) {
-            setRestrictionState(reason);
-            setRestrictionOpen(true);
-            return false;
-        }
-        return true;
-    };
 
     // Map IndexedDB schedules to UI format
     const mappedSchedules = allSchedules.map((schedule) => {
@@ -116,6 +103,7 @@ export const useSchedulesLogic = () => {
             outputFormat: schedule.outputFormat || 'csv',
             targetPreview,
             time: schedule.time,
+            dayOfMonth: schedule.dayOfMonth,
             days: schedule.days,
             timezone: schedule.timezone,
             cronExpression: schedule.cronExpression,
@@ -170,8 +158,8 @@ export const useSchedulesLogic = () => {
     // Wrapper for createSchedule to handle Limit errors
     const handleScheduleCreation = async (data: Partial<ScheduleType>) => {
         // 1. Client-side Pre-check
-        if (!(await checkPermission('Schedule Creation'))) {
-            setIsCreateDialogOpen(false);
+        if (!hasFeature('schedule', 'creation', allSchedules.length)) {
+            setRestrictionOpen(true);
             return;
         }
 
@@ -184,56 +172,44 @@ export const useSchedulesLogic = () => {
 
             const lowerMsg = msg.toLowerCase();
             if (lowerMsg.includes('limit') || lowerMsg.includes('maximum')) {
-                setIsCreateDialogOpen(false); // Close create dialog
-                setRestrictionState(SubscriptionState.PLAN_ACTIVE); // Assume active plan if Limit reached (usually)
-                setRestrictionOpen(true);
-            } else if (lowerMsg.includes('expired') || lowerMsg.includes('plan') || lowerMsg.includes('upgrade') || lowerMsg.includes('trial') || lowerMsg.includes('allowed')) {
                 setIsCreateDialogOpen(false);
-                setRestrictionState(SubscriptionState.TRIAL_EXPIRED);
+                setRestrictionOpen(true);
+            } else if (lowerMsg.includes('expired') || lowerMsg.includes('plan') || lowerMsg.includes('upgrade') || lowerMsg.includes('trial')) {
+                setIsCreateDialogOpen(false);
                 setRestrictionOpen(true);
             } else {
-                // Re-throw or toast for other errors
                 toast.error('Failed to create schedule', { description: msg });
-                throw error; // Re-throw so the dialog knows it failed
             }
         }
     };
 
     const handleUpdateSchedule = async (id: string, data: any) => {
-        // 1. Client-side Pre-check
-        if (!(await checkPermission('Schedule Editing'))) {
-            setEditingScheduleId(null);
-            return;
-        }
-
+        // Simple update check - usually allowed if they can see the schedule
         try {
             await updateSchedule(id, data);
             setIsCreateDialogOpen(false);
             setEditingScheduleId(null);
         } catch (error: any) {
             console.error('[SchedulesPage] Update failed:', error);
-
-            const msg = (error instanceof Error ? error.message : String(error)).toLowerCase();
-            if (msg.includes('expired') || msg.includes('upgrade') || msg.includes('trial') || msg.includes('allowed')) {
-                setRestrictionState(SubscriptionState.TRIAL_EXPIRED);
-                setRestrictionOpen(true);
-            } else {
-                toast.error('Failed to update schedule');
-            }
+            toast.error('Failed to update schedule');
         }
     }
 
     // Handle toggle schedule (pause/resume)
-    const handleToggleSchedule = async (schedule: any) => {
-        if (!(await checkPermission('Automated Schedules'))) return;
+    const handleToggleSchedule = (schedule: UISchedule) => {
+        if (!hasFeature('schedule', 'creation')) { // Re-using creation check as active check
+            setRestrictionOpen(true);
+            return;
+        }
         setPendingToggle(schedule);
     };
 
     const confirmToggleSchedule = async () => {
         if (!pendingToggle) return;
 
-        // 2. Client-side Pre-check (Double check before API call and loading state)
-        if (!(await checkPermission('Automated Schedules'))) {
+        // 2. Client-side Pre-check 
+        if (subscriptionState === SubscriptionState.TRIAL_EXPIRED || subscriptionState === SubscriptionState.PLAN_EXPIRED) {
+            setRestrictionOpen(true);
             setPendingToggle(null);
             return;
         }
@@ -277,21 +253,30 @@ export const useSchedulesLogic = () => {
     };
 
     // Handle edit schedule
-    const handleEditSchedule = async (schedule: UISchedule) => {
-        if (!(await checkPermission('Schedule Editing'))) return;
+    const handleEditSchedule = (schedule: UISchedule) => {
+        if (!hasFeature('schedule', 'creation')) {
+            setRestrictionOpen(true);
+            return;
+        }
         setEditingScheduleId(schedule.id);
         setIsCreateDialogOpen(true);
     };
 
-    const handleCreateNew = async () => {
-        if (!(await checkPermission('Schedule Creation'))) return;
+    const handleCreateNew = () => {
+        if (!hasFeature('schedule', 'creation', allSchedules.length)) {
+            setRestrictionOpen(true);
+            return;
+        }
         setEditingScheduleId(null);
         setIsCreateDialogOpen(true);
     };
 
     // Handle delete single schedule
-    const handleDeleteSingleSchedule = async (schedule: any) => {
-        if (!(await checkPermission('Schedule Deletion'))) return;
+    const handleDeleteSingleSchedule = (schedule: UISchedule) => {
+        if (subscriptionState === SubscriptionState.PLAN_EXPIRED) {
+            setRestrictionOpen(true);
+            return;
+        }
         setPendingDelete(schedule);
     };
 
@@ -372,8 +357,11 @@ export const useSchedulesLogic = () => {
     // ... (existing state) ...
 
     // Bulk action handlers
-    const handleBulkDelete = async (selectedSchedules: UISchedule[], clearSelection: () => void) => {
-        if (!(await checkPermission('Schedule Deletion'))) return;
+    const handleBulkDelete = (selectedSchedules: UISchedule[], clearSelection: () => void) => {
+        if (subscriptionState === SubscriptionState.PLAN_EXPIRED) {
+            setRestrictionOpen(true);
+            return;
+        }
         setPendingBulkDelete({ schedules: selectedSchedules, clearSelection });
     };
 
@@ -444,7 +432,10 @@ export const useSchedulesLogic = () => {
     };
 
     const handleBulkPauseResume = async (selectedSchedules: UISchedule[], clearSelection: () => void) => {
-        if (!(await checkPermission('Automated Schedules'))) return;
+        if (subscriptionState === SubscriptionState.PLAN_EXPIRED || subscriptionState === SubscriptionState.TRIAL_EXPIRED) {
+            setRestrictionOpen(true);
+            return;
+        }
 
         try {
             const activeCount = selectedSchedules.filter((s) => s.status === 'active').length;
@@ -482,7 +473,10 @@ export const useSchedulesLogic = () => {
     };
 
     const handleBulkDuplicate = async (selectedSchedules: UISchedule[], clearSelection: () => void) => {
-        if (!(await checkPermission('Schedule Creation'))) return;
+        if (!hasFeature('schedule', 'creation', allSchedules.length + selectedSchedules.length)) {
+            setRestrictionOpen(true);
+            return;
+        }
 
         try {
             const count = selectedSchedules.length;
@@ -536,8 +530,11 @@ export const useSchedulesLogic = () => {
         }
     };
 
-    const handleRunSchedule = async (schedule: any) => {
-        if (!(await checkPermission('Manual Execution'))) return;
+    const handleRunSchedule = async (schedule: UISchedule) => {
+        if (subscriptionState === SubscriptionState.PLAN_EXPIRED || subscriptionState === SubscriptionState.TRIAL_EXPIRED) {
+            setRestrictionOpen(true);
+            return;
+        }
         setPendingRun(schedule);
     };
 
@@ -545,15 +542,17 @@ export const useSchedulesLogic = () => {
         if (!pendingRun) return;
 
         // 2. Client-side Pre-check 
-        if (!(await checkPermission('Manual Execution'))) {
+        if (subscriptionState === SubscriptionState.PLAN_EXPIRED || subscriptionState === SubscriptionState.TRIAL_EXPIRED) {
+            setRestrictionOpen(true);
             setPendingRun(null);
             return;
         }
 
+        const toastId = `run-schedule-${pendingRun.id}-${Date.now()}`;
+
         try {
             // Add to running set
             setRunningSchedules(prev => new Set(prev).add(pendingRun.id));
-            const toastId = `run-schedule-${pendingRun.id}-${Date.now()}`;
 
             toast.loading(`Running ${pendingRun.name}...`, {
                 id: toastId,
@@ -572,7 +571,10 @@ export const useSchedulesLogic = () => {
 
             const result = response.result;
 
-            // Refresh the list to show updated lastRunAt
+            // Wait slightly for background DB updates to propagate
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Refresh the list to show updated lastRunAt and nextRunAt
             await loadSchedules();
 
             if (result.success) {
@@ -597,7 +599,7 @@ export const useSchedulesLogic = () => {
                 setRestrictionOpen(true);
             } else {
                 toast.error('Failed to run schedule', {
-                    id: `run-schedule-${pendingRun.id}-error`, // Unique ID for error too
+                    id: toastId, // Unique ID for error too
                     description: error instanceof Error ? error.message : 'Unknown error',
                 });
             }
@@ -635,7 +637,7 @@ export const useSchedulesLogic = () => {
         runningSchedules,
         isCreateDialogOpen,
         restrictionOpen,
-        restrictionState,
+        subscriptionState,
 
         // Actions
         updatePageState,

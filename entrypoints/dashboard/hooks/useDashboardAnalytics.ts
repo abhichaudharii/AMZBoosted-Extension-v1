@@ -133,13 +133,13 @@ export const useDashboardAnalytics = (tasks: any[]) => {
         // Marketplace breakdown
         const marketplaceCounts: Record<string, number> = {};
         filteredTasks.forEach((task) => {
-            const market = task.marketplace || 'Unknown';
+            const market = (task.marketplace || 'Unknown').toUpperCase();
             marketplaceCounts[market] = (marketplaceCounts[market] || 0) + 1;
         });
 
         const marketplaceBreakdown = Object.entries(marketplaceCounts)
             .map(([marketplace, count]) => ({
-                marketplace: marketplace.toUpperCase(),
+                marketplace,
                 count,
             }))
             .sort((a, b) => b.count - a.count);

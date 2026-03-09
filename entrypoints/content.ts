@@ -180,6 +180,11 @@ export default defineContentScript({
                 '#corePrice_feature_div .a-offscreen',
                 '#price_inside_buybox',
                 '.aok-offscreen', // User reported case
+                '#attach-base-product-price',
+                '#priceblock_ourprice',
+                '#priceblock_dealprice',
+                '.base-pricing .a-price',
+                '#newBuyBoxPrice'
             ];
 
             let price = '';
@@ -193,7 +198,7 @@ export default defineContentScript({
                 }
             }
 
-            // Fallback: Construct from parts if found
+            // Fallback 1: Construct from parts if found
             if (!price) {
                 const whole = document.querySelector('.a-price-whole')?.textContent?.trim();
                 const fraction = document.querySelector('.a-price-fraction')?.textContent?.trim();
@@ -203,9 +208,18 @@ export default defineContentScript({
                 }
             }
 
+            // Fallback 2: Regex search in body if still not found (last resort)
+            if (!price) {
+                const priceMatch = document.body.innerText.match(/(\$|£|€|₹)\s?(\d{1,3}(,\d{3})*(\.\d{2})?)/);
+                if (priceMatch) {
+                    price = priceMatch[0];
+                }
+            }
+
             // List Price / MSRP
             const listPrice = document.querySelector('.a-text-price .a-offscreen')?.textContent?.trim() ||
-                document.querySelector('#listPrice')?.textContent?.trim() || '';
+                document.querySelector('#listPrice')?.textContent?.trim() ||
+                document.querySelector('.basisPrice .a-offscreen')?.textContent?.trim() || '';
 
             const deal = document.querySelector('#dealBadge, .savingsPercentage')?.textContent?.trim() || '';
             const primeEligible = !!document.querySelector('[aria-label*="Prime"]');
@@ -222,7 +236,26 @@ export default defineContentScript({
 
         // Extract availability
         function extractAvailability() {
-            const inStock = !!document.querySelector('#availability .a-color-success');
+            const inStockSelectors = [
+                '#availability .a-color-success',
+                '#availability .a-declarative',
+                '#add-to-cart-button',
+                '#buy-now-button'
+            ];
+
+            let inStock = false;
+            for (const selector of inStockSelectors) {
+                if (document.querySelector(selector)) {
+                    inStock = true;
+                    break;
+                }
+            }
+
+            const availabilityText = document.querySelector('#availability span')?.textContent?.toLowerCase() || '';
+            if (availabilityText.includes('currently unavailable') || availabilityText.includes('out of stock')) {
+                inStock = false;
+            }
+
             const stockMessage = document.querySelector('#availability span')?.textContent?.trim() || '';
             const quantity = (document.querySelector('#quantity') as HTMLSelectElement)?.options.length || 0;
 

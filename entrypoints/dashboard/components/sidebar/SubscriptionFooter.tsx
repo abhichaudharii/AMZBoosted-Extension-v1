@@ -161,18 +161,16 @@ export function SubscriptionFooter({
            
            {/* 1. Active Trial */}
            {subscriptionState === SubscriptionState.TRIAL_ACTIVE && trialProgress && (
-             <div className="relative p-4 rounded-xl bg-[#1A1A1C]/60 backdrop-blur-xl border border-[#FF6B00]/20 overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-500">
-               <div className="absolute inset-0 bg-gradient-to-r from-[#FF6B00]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-               <div className="absolute -right-12 -top-12 w-24 h-24 bg-[#FF6B00]/10 rounded-full blur-2xl group-hover:bg-[#FF6B00]/20 transition-all duration-500" />
+             <div className="relative p-4 rounded-xl bg-zinc-900/40 backdrop-blur-xl border border-white/5 overflow-hidden group transition-all duration-500">
                
                <div className="flex items-center gap-3 mb-3 relative z-10">
-                 <div className="p-2 rounded-lg bg-[#FF6B00]/20 text-[#FF6B00] ring-1 ring-[#FF6B00]/30 group-hover:scale-110 transition-transform duration-300">
+                 <div className="p-2 rounded-lg bg-white/5 text-gray-400 ring-1 ring-white/10 group-hover:scale-110 transition-transform duration-300">
                    <Rocket className="w-4 h-4" />
                  </div>
                  <div>
                    <p className="text-xs font-bold text-white uppercase tracking-wide flex items-center gap-2">
                       Free Trial
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_5px_rgba(16,185,129,0.8)]" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]" />
                    </p>
                    <p className="text-[10px] text-gray-400">Full access enabled</p>
                  </div>
@@ -197,7 +195,7 @@ export function SubscriptionFooter({
                <Button 
                  size="sm" 
                  onClick={() => onNavigate('/billing')}
-                 className="w-full bg-[#FF6B00] hover:bg-[#FF8533] text-white font-bold h-9 text-xs shadow-lg shadow-orange-500/20 relative z-10 overflow-hidden group/btn border-0"
+                 className="w-full bg-[#FF6B00] hover:bg-[#FF8533] text-white font-bold h-9 text-xs relative z-10 overflow-hidden group/btn border-0"
                >
                  <span className="relative z-10 flex items-center justify-center gap-2">
                     Upgrade Plan <ChevronRight className="w-3 h-3 group-hover/btn:translate-x-1 transition-transform"/>
@@ -286,7 +284,7 @@ export function SubscriptionFooter({
 
                <div className="relative z-10">
                  <div className="flex items-center gap-3 mb-3">
-                   <div className="p-2 rounded-lg bg-[#FF6B00]/10 text-[#FF6B00] border border-[#FF6B00]/20">
+                   <div className="p-2 rounded-lg bg-white/5 text-gray-400 border border-white/10">
                      <Crown className="h-4 w-4" />
                    </div>
                    <div>

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Timer } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -10,8 +9,6 @@ export interface ToolPageLayoutProps {
     subtitle?: string;
     icon?: React.ElementType;
     iconColorClass?: string;
-    iconBgClass?: string;
-    category?: string;
     badge?: string;
     lastActive?: string;
     actions?: React.ReactNode;
@@ -25,9 +22,7 @@ export const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({
     title,
     subtitle,
     icon: Icon,
-    iconColorClass = "text-[#FF6B00]",
-    iconBgClass = "bg-white/5",
-    category,
+    iconColorClass = "text-gray-400",
     badge,
     lastActive,
     actions,
@@ -40,13 +35,13 @@ export const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({
 
     return (
         <div className="min-h-screen bg-[#0A0A0B] p-6 lg:p-8 animate-fade-in relative overflow-hidden text-foreground pb-24">
-             {/* Ambient Background - Identical to SchedulesPage */}
-            <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[#FF6B00]/5 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-[#FF8533]/5 rounded-full blur-[120px] pointer-events-none" />
+             {/* Ambient Background - Relaxed Neutral Glow */}
+            <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-slate-500/2 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-slate-400/2 rounded-full blur-[120px] pointer-events-none" />
 
             <div className={cn("mx-auto space-y-8 relative z-10", wide ? "max-w-[1600px]" : "max-w-7xl")}>
                 
-                {/* Header Section - Identical Structure to SchedulesPage */}
+                {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
                      <div>
                         {/* Upper Badge Row */}
@@ -65,7 +60,7 @@ export const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({
                             
                             {badge && (
                                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-gray-400">
-                                    {Icon && <Icon className={cn("w-3 h-3", iconColorClass.includes('text') ? iconColorClass : "text-[#FF6B00]")} />}
+                                    {Icon && <Icon className={cn("w-3 h-3", iconColorClass.includes('text') ? iconColorClass : "text-gray-400")} />}
                                     <span>{badge}</span>
                                 </div>
                             )}

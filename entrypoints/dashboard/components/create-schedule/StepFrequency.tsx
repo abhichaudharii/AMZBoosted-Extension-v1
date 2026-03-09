@@ -206,7 +206,33 @@ export const StepFrequency: React.FC<StepFrequencyProps> = ({
           )}
         </div>
       )}
-      
+      {/* Monthly Setup (Day of Month + Time) */}
+      {(formData.frequency === 'monthly') && (
+        <div className="grid gap-2 animate-in fade-in slide-in-from-top-2">
+          <Label htmlFor="dayOfMonth">Run on Day of Month</Label>
+          <Select
+            value={formData.dayOfMonth?.toString() || "1"}
+            onValueChange={(value) => setFormData({ ...formData, dayOfMonth: parseInt(value) })}
+          >
+            <SelectTrigger id="dayOfMonth" className="w-full bg-[#0A0A0B]/50 border-white/10 text-white h-11 focus:ring-[#FF6B00]/20">
+              <SelectValue placeholder="Select day" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#1A1A1C] border-white/10 text-white max-h-[300px]">
+              {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                <SelectItem key={day} value={day.toString()} className="focus:bg-white/10 focus:text-white cursor-pointer">
+                  Day {day}
+                </SelectItem>
+              ))}
+              <SelectItem value="32" className="focus:bg-white/10 focus:text-white cursor-pointer">
+                Last Day of Month
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            Schedule will run once per month on the selected day.
+          </p>
+        </div>
+      )}
       {/* Time or Interval Input */}
       {formData.frequency !== 'hourly' ? (
         <div className="grid gap-2">

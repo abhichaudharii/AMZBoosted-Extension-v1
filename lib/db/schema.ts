@@ -82,6 +82,7 @@ export interface Schedule {
     dataPeriod?: string; // 'current_week' | 'yesterday' | 'last_7_days' etc.
     outputFormat?: 'csv' | 'json' | 'excel';
     interval?: number;
+    dayOfMonth?: number;
     options?: any;
     retryCount?: number;
 }

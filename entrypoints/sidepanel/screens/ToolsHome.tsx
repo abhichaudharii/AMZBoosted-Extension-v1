@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
 import { 
-  Zap, ChevronRight, ChevronDown
+  Zap, ChevronRight, ChevronDown, Search, X
 } from 'lucide-react';
 import { Navbar } from '../components/Navbar';
 import { cn } from '@/lib/utils';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRemoteTools } from '@/lib/hooks/useRemoteTools'; // Dynamic Import
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { secureStorage } from '@/lib/storage/secure-storage';
@@ -109,75 +109,102 @@ export const ToolsHome: React.FC<ToolsHomeProps> = ({
   onOpenDashboard,
 }) => {
   const { tools } = useRemoteTools();
+  const [searchQuery, setSearchQuery] = useState('');
   
-  // Group tools by category
+  // Predefined order for categories
+  const CATEGORY_ORDER = [
+    'Listing Optimization',
+    'Product Research',
+    'Competitor Analysis',
+    'Customer Intelligence',
+    'Inventory Management',
+    'Performance Reports',
+    'Business Reports',
+    'PPC & Advertising'
+  ];
+
+  // Group and Sort tools by category with Search filter
   const sections = React.useMemo(() => {
     const groups: Record<string, any[]> = {};
-    // Only show enabled tools
-    tools.filter(t => t.enabled).forEach(tool => {
-      if (!groups[tool.category]) {
-        groups[tool.category] = [];
-      }
-      groups[tool.category].push(tool);
-    });
+    const normalizedQuery = searchQuery.toLowerCase().trim();
+    
+    // 1. Filter and Group enabled tools
+    tools
+      .filter(t => t.enabled)
+      .filter(t => {
+          if (!normalizedQuery) return true;
+          return t.name.toLowerCase().includes(normalizedQuery) || 
+                 (t.description?.toLowerCase().includes(normalizedQuery)) ||
+                 (t.category?.toLowerCase().includes(normalizedQuery));
+      })
+      .forEach(tool => {
+        const cat = tool.category || 'General';
+        if (!groups[cat]) groups[cat] = [];
+        groups[cat].push(tool);
+      });
 
-    return Object.entries(groups).map(([category, items]) => {
-      let displayTitle = category;
-      if (category.toLowerCase() === 'business_reports') {
-        displayTitle = 'Business Reports';
-      }
+    // 2. Map to section objects and sort
+    const sortedSections = Object.entries(groups)
+      .map(([category, items]) => {
+        const id = category.toLowerCase().replace(/\s+/g, '-');
+        const theme = getThemeForCategory(category);
+        
+        // Alphabetical sort within category
+        const sortedItems = [...items].sort((a, b) => a.name.localeCompare(b.name));
 
-      const firstItem = items[0];
-      let itemTheme = firstItem?.colorTheme || firstItem?.theme; 
-      
-      if (displayTitle === 'Business Reports') {
-          itemTheme = 'violet'; 
-      }
+        return {
+          id,
+          title: category,
+          description: `${items.length} tool${items.length > 1 ? 's' : ''}`,
+          items: sortedItems,
+          theme,
+          // Default to open only for the first two categories if not in storage
+          // OR if searching, open everything that matches
+          defaultOpen: normalizedQuery !== '' || (CATEGORY_ORDER.indexOf(category) < 2 && CATEGORY_ORDER.indexOf(category) !== -1)
+        };
+      })
+      // Predefined category sort
+      .sort((a, b) => {
+        const indexA = CATEGORY_ORDER.indexOf(a.title);
+        const indexB = CATEGORY_ORDER.indexOf(b.title);
+        if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        return a.title.localeCompare(b.title);
+      });
 
-      const theme = (typeof itemTheme === 'string' ? itemTheme : '') || getThemeForCategory(category);
+    return sortedSections;
+  }, [tools, searchQuery]);
 
-      return {
-        id: category.toLowerCase().replace(/\s+/g, '-'),
-        title: displayTitle,
-        description: `${items.length} tools available`,
-        items,
-        theme,
-        defaultOpen: true
-      };
-    });
-  }, [tools]);
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  // Initialize state with defaults
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
-    return {}; 
-  });
-
-  // Sync openSections when sections change (tools loaded)
-  useEffect(()=> {
-      if (sections.length > 0) {
-         setOpenSections(prev => {
-             const next = { ...prev };
-             sections.forEach(s => {
-                 if (next[s.id] === undefined) {
-                     next[s.id] = s.defaultOpen;
-                 }
-             });
-             return next;
-         });
-      }
-  }, [sections]);
-
-  // Load persisted states from Chrome storage on mount
+  // Initial Load from Storage
   useEffect(() => {
     secureStorage.get(['amz_boosted_section_states']).then((result) => {
       if (result.amz_boosted_section_states) {
-        setOpenSections((prev) => ({
-          ...prev,
-          ...result.amz_boosted_section_states
-        }));
+        setOpenSections(result.amz_boosted_section_states);
       }
+      setIsLoaded(true);
     });
   }, []);
+
+  // Sync defaults if not set in storage after sections load
+  useEffect(() => {
+    if (isLoaded && sections.length > 0) {
+      setOpenSections(prev => {
+        const next = { ...prev };
+        let changed = false;
+        sections.forEach(s => {
+          if (next[s.id] === undefined) {
+            next[s.id] = s.defaultOpen;
+            changed = true;
+          }
+        });
+        return changed ? next : prev;
+      });
+    }
+  }, [isLoaded, sections]);
 
   const toggleSection = (id: string) => {
     setOpenSections(prev => {
@@ -202,10 +229,38 @@ export const ToolsHome: React.FC<ToolsHomeProps> = ({
 
       <div className="flex-1 flex flex-col min-h-0 relative">
         
+        {/* Search Bar */}
+        <div className="px-3 pt-3">
+          <div className="relative group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 group-focus-within:text-zinc-300 transition-colors" />
+            <input 
+              type="text"
+              placeholder="Search tools..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-[#1A1A1C]/40 border border-white/5 rounded-xl py-2.5 pl-10 pr-10 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-white/10 focus:bg-[#1A1A1C]/60 transition-all"
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-white/10 rounded-full transition-colors"
+              >
+                <X className="h-3 w-3 text-zinc-500" />
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* 2. SCROLLABLE CONTENT */}
         <ScrollArea className="flex-1">
           <div className="p-3 pb-6 space-y-3">
             
+            {sections.length === 0 && searchQuery && (
+              <div className="py-12 text-center space-y-2">
+                <p className="text-zinc-400 text-sm font-medium">No tools found</p>
+                <p className="text-zinc-600 text-xs">Try a different search term</p>
+              </div>
+            )}
             {sections.map((section) => {
               if (section.items.length === 0) return null;
 

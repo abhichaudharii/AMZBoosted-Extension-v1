@@ -53,27 +53,17 @@ class APIClient implements IAPIClient {
     }
 
     private setupNetworkListeners() {
-        // Check if we're in a context that has window (not background service worker)
+        // Use standard window events for online/offline status
         if (typeof window !== 'undefined' && window.addEventListener) {
             window.addEventListener('online', () => {
                 this.isOnline = true;
-                console.log('[API] Network connection restored');
                 this.updateConnectionState('online');
             });
 
             window.addEventListener('offline', () => {
                 this.isOnline = false;
-                console.log('[API] Network connection lost');
                 this.updateConnectionState('offline');
             });
-        } else {
-            // In background service worker, check navigator.onLine periodically
-            setInterval(() => {
-                if (this.isOnline !== navigator.onLine) {
-                    this.isOnline = navigator.onLine;
-                    this.updateConnectionState(this.isOnline ? 'online' : 'offline');
-                }
-            }, 5000); // Check every 5 seconds
         }
     }
 
@@ -385,32 +375,32 @@ class APIClient implements IAPIClient {
     // USER & CREDITS
     // ============================================
 
-    async getUser(forceRefresh = false): Promise<User | null> {
-        return UserService.getUser(this, forceRefresh);
+    async getUser(): Promise<User | null> {
+        return UserService.getUser(this);
     }
 
-    async getCredits(forceRefresh = false): Promise<Credits | null> {
-        return UserService.getCredits(this, forceRefresh);
+    async getCredits(): Promise<Credits | null> {
+        return UserService.getCredits(this);
     }
 
-    async getLimits(forceRefresh = false): Promise<PlanLimits | null> {
-        return UserService.getLimits(this, forceRefresh);
+    async getLimits(): Promise<PlanLimits | null> {
+        return UserService.getLimits(this);
     }
 
-    async getUsageStats(forceRefresh = false): Promise<UsageStats | null> {
-        return UserService.getUsageStats(this, forceRefresh);
+    async getUsageStats(): Promise<UsageStats | null> {
+        return UserService.getUsageStats(this);
     }
 
-    async getSubscriptionStatus(forceRefresh = false): Promise<SubscriptionStatus | null> {
-        return UserService.getSubscriptionStatus(this, forceRefresh);
+    async getSubscriptionStatus(): Promise<SubscriptionStatus | null> {
+        return UserService.getSubscriptionStatus(this);
     }
 
-    async getPlans(forceRefresh = false): Promise<any[] | null> {
-        return UserService.getPlans(this, forceRefresh);
+    async getPlans(): Promise<any[] | null> {
+        return UserService.getPlans(this);
     }
 
-    async getTools(forceRefresh = false): Promise<any[] | null> {
-        return ToolsService.getTools(this, forceRefresh);
+    async getTools(): Promise<any[] | null> {
+        return ToolsService.getTools(this);
     }
 
     // ============================================
@@ -437,8 +427,8 @@ class APIClient implements IAPIClient {
         return IntegrationsService.syncIntegration(this, id);
     }
 
-    async getAvailableIntegrations(forceRefresh = false): Promise<any[]> {
-        return IntegrationsService.getAvailableIntegrations(this, forceRefresh);
+    async getAvailableIntegrations(): Promise<any[]> {
+        return IntegrationsService.getAvailableIntegrations(this);
     }
 
     async connectIntegration(data: {

@@ -11,6 +11,7 @@ import { RecentActivity } from './dashboard-home/components/RecentActivity';
 import { RecentExports } from './dashboard-home/components/RecentExports';
 import { PlanUsage } from './dashboard-home/components/PlanUsage';
 import { UpcomingSchedules } from './dashboard-home/components/UpcomingSchedules';
+import { WhatsNew } from './dashboard-home/components/WhatsNew';
 
 export const DashboardHome: React.FC = () => {
   // Hooks for data, analytics and settings
@@ -25,9 +26,9 @@ export const DashboardHome: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0A0A0B] p-6 lg:p-8 animate-fade-in relative overflow-hidden text-foreground pb-24">
-       {/* Ambient Background */}
-       <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[#FF6B00]/5 rounded-full blur-[120px] pointer-events-none" />
-       <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-[#FF8533]/5 rounded-full blur-[120px] pointer-events-none" />
+       {/* Ambient Background - Neutral/Blue Calm */}
+       <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
+       <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-slate-500/5 rounded-full blur-[120px] pointer-events-none" />
 
        <div className="max-w-7xl mx-auto space-y-8 relative z-10 w-full">
           {/* Header */}
@@ -51,39 +52,54 @@ export const DashboardHome: React.FC = () => {
             />
           )}
 
-          {/* Usage Charts */}
-          {isSectionVisible('charts') && (
-            <DashboardCharts analytics={analytics} periodLabel={getPeriodLabel(selectedPeriod)} />
-          )}
+          <div className="grid gap-8 lg:grid-cols-3">
+            {/* Usage Charts - Prominent positioning */}
+            {isSectionVisible('charts') && (
+              <div className="lg:col-span-3">
+                <DashboardCharts analytics={analytics} periodLabel={getPeriodLabel(selectedPeriod)} />
+              </div>
+            )}
 
-          {/* Quick Actions */}
-          {isSectionVisible('quickActions') && (
-            <QuickActions />
-          )}
+            {/* What's New Section - Flowing Sidebar-style component */}
+            {isSectionVisible('whatsNew') && (
+              <div className="lg:col-span-1">
+                <WhatsNew />
+              </div>
+            )}
 
-          {/* Recent Activity Sections */}
-          <div className="grid gap-6 lg:grid-cols-2">
-            {/* Recent Activity */}
+            {/* Recent Activity - High density main component */}
             {isSectionVisible('recentActivity') && (
-              <RecentActivity tasks={tasks} />
+              <div className="lg:col-span-2">
+                <RecentActivity tasks={tasks} />
+              </div>
+            )}
+
+            {/* Quick Actions */}
+            {isSectionVisible('quickActions') && (
+              <div className="lg:col-span-1">
+                <QuickActions />
+              </div>
             )}
 
             {/* Recent Exports */}
             {isSectionVisible('recentExports') && (
-              <RecentExports exports={exports} />
+              <div className="lg:col-span-2">
+                <RecentExports exports={exports} />
+              </div>
             )}
-          </div>
 
-          {/* Plan Usage & Schedules */}
-          <div className="grid gap-6 lg:grid-cols-2">
             {/* Plan Usage */}
             {isSectionVisible('planUsage') && (
-              <PlanUsage credits={credits} schedules={schedules} limits={limits} />
+              <div className="lg:col-span-1">
+                <PlanUsage credits={credits} schedules={schedules} limits={limits} />
+              </div>
             )}
 
             {/* Upcoming Schedules */}
             {isSectionVisible('upcomingSchedules') && (
-              <UpcomingSchedules schedules={schedules} />
+              <div className="lg:col-span-1">
+                <UpcomingSchedules schedules={schedules} />
+              </div>
             )}
           </div>
        </div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -12,9 +12,6 @@ import {
   MessageCircle,
   Mail,
   ExternalLink,
-  CheckCircle2,
-  XCircle,
-  AlertCircle,
   Send,
   Search,
   PlayCircle,
@@ -124,12 +121,6 @@ const systemStatus: SystemStatus[] = [
   { service: 'Dashboard', status: 'operational', uptime: '99.99%' },
 ];
 
-const statusIcons: Record<SystemStatus['status'], React.ElementType> = {
-  operational: CheckCircle2,
-  degraded: AlertCircle,
-  down: XCircle,
-};
-
 const statusColors: Record<SystemStatus['status'], string> = {
   operational: 'text-emerald-500',
   degraded: 'text-yellow-500',
@@ -147,12 +138,11 @@ export const SupportPage: React.FC = () => {
 
   return (
     <ToolPageLayout
-      title='Help & <span class="text-[#FF6B00]">Support</span>'
+      title='Help & <span class="text-primary font-black">Support</span>'
       subtitle="Find answers, tutorials, and join our community."
       icon={LifeBuoy}
       badge="Support Center"
-      iconBgClass="bg-[#FF6B00]/10"
-      iconColorClass="text-[#FF6B00]"
+      iconColorClass="text-primary"
       showBackButton={false}
     >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -163,7 +153,7 @@ export const SupportPage: React.FC = () => {
           {/* FAQ Section */}
           <div className="space-y-6">
              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-[#FF6B00]/10 border border-[#FF6B00]/20 text-[#FF6B00]">
+                <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-500">
                   <HelpCircle className="w-5 h-5" />
                 </div>
                 <div>
@@ -325,7 +315,6 @@ export const SupportPage: React.FC = () => {
             </div>
              <Card className="bg-[#0A0A0B]/60 backdrop-blur-md border border-white/5 p-4 space-y-3">
                 {systemStatus.map((item) => {
-                  const Icon = statusIcons[item.status];
                   const colorClass = statusColors[item.status];
                   return (
                     <div key={item.service} className="flex items-center justify-between">

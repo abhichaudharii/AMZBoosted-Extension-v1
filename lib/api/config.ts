@@ -33,7 +33,7 @@ export const API_CONFIG = {
      * Only retries on network errors, timeouts, and 5xx server errors
      * Set to 0 to disable retries
      */
-    maxRetries: 0,
+    maxRetries: 2,
 
     /**
      * Retry delays in milliseconds (exponential backoff)

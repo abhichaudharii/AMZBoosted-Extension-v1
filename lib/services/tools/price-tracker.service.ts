@@ -129,7 +129,8 @@ class PriceTrackerService {
 
                         results.push({
                             ...history,
-                            title: tracker.title
+                            title: tracker.title,
+                            inStock: priceData.availability?.inStock
                         });
 
                         // 6. Check Alerts & Notify
@@ -176,9 +177,13 @@ class PriceTrackerService {
         }
 
         return {
-            success: true,
-            processedCount: results.length,
+            success: results.length > 0,
+            processedCount: asinList.length,
+            total: asinList.length,
+            successful: results.length,
+            failed: errors.length,
             results: results,
+            errors: errors,
             creditsUsed: 0
         };
     }

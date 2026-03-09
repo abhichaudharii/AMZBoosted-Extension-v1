@@ -136,10 +136,13 @@ class DownloadService {
                 content = this.convertToJSON(data);
                 mimeType = 'application/json';
             } else if (format === 'xlsx') {
-                // For now, fall back to CSV for XLSX (can be enhanced later with a library)
-                content = this.convertToCSV(data);
-                mimeType = 'text/csv';
-                console.warn('[Download] XLSX not yet implemented, using CSV');
+                // Use optimized Excel utility with dynamic import
+                const { generateExcel } = await import('@/lib/utils/excel');
+                const cleanName = options.toolName.replace(/[^a-zA-Z0-9]/g, '');
+                const excelData = await generateExcel(data, cleanName);
+                content = excelData.content;
+                mimeType = excelData.mimeType;
+                console.log('[Download] XLSX generated successfully using optimized utility');
             } else {
                 throw new Error(`Unsupported format: ${format}`);
             }

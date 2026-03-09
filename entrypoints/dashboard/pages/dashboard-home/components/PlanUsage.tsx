@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { Zap, Calendar, ExternalLink } from 'lucide-react';
 import { formatCompactNumber } from '@/entrypoints/dashboard/pages/dashboard-home/components/utils';
@@ -14,51 +13,44 @@ interface PlanUsageProps {
 
 export const PlanUsage: React.FC<PlanUsageProps> = ({ credits, schedules, limits }) => {
   return (
-    <div className="bg-[#1A1A1C]/50 backdrop-blur-md rounded-xl border border-white/5 overflow-hidden transition-all hover:border-white/10 group flex flex-col h-full">
-      <div className="p-6 border-b border-white/5 flex flex-col gap-1">
-        <div className="flex items-center gap-2 text-lg font-bold text-white">
-          <div className="p-1.5 rounded-lg bg-pink-500/10 text-pink-500 group-hover:scale-110 transition-transform">
-            <Zap className="h-5 w-5" />
-          </div>
-          Plan Usage
+    <div className="bg-[#0A0A0B]/60 backdrop-blur-xl rounded-3xl border border-white/5 overflow-hidden transition-all hover:border-white/10 group flex flex-col relative">
+       {/* Ambient Glow */}
+       <div className="absolute -top-12 -right-12 h-24 w-24 bg-primary/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+      <div className="px-6 py-5 border-b border-white/5 flex items-center gap-3 relative z-10">
+        <div className="p-2 rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform duration-500 shadow-[0_0_20px_-5px_rgba(255,107,0,0.3)]">
+          <Zap className="h-4 w-4" />
         </div>
-        <p className="text-sm text-gray-400">Current month limits and usage</p>
+        <h3 className="text-lg font-black text-white tracking-tight">Plan Usage</h3>
       </div>
 
-      <div className="p-6 space-y-8">
+      <div className="p-6 space-y-8 relative z-10">
         {/* Credits */}
         <div className="space-y-3">
             <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-lg bg-yellow-500/10 flex items-center justify-center border border-yellow-500/20">
-                <Zap className="h-4 w-4 text-yellow-500" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-white">Credits</p>
-                <p className="text-xs text-gray-500">Monthly allocation</p>
-              </div>
+            <div className="flex items-center gap-2">
+              <Zap className="h-3.5 w-3.5 text-primary" />
+              <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Usage Credits</p>
             </div>
             <div className="text-right">
-              <p className="text-lg font-bold text-white">
+              <p className="text-sm font-black text-white tracking-tight">
                 {(credits?.total && (credits.total - (credits.remaining || 0)) < 1000)
                   ? `${(credits.total - (credits.remaining || 0)).toLocaleString()}`
                   : formatCompactNumber(credits?.total ? (credits.total - (credits.remaining || 0)) : 0)
                 }
-                <span className="text-sm font-normal text-gray-500">
+                <span className="text-[10px] font-bold text-slate-500 uppercase ml-1">
                    / {formatCompactNumber(credits?.total || 0)}
                 </span>
               </p>
-              <p className="text-xs text-gray-500">
-                Credits Used
-              </p>
             </div>
           </div>
-          <div className="space-y-1">
-             <Progress 
-                value={credits?.total ? ((credits.total - (credits.remaining || 0)) / credits.total) * 100 : 0} 
-                className="h-2 bg-white/5"
-                indicatorClassName="bg-yellow-500"
-             />
+          <div className="relative pt-1">
+             <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+                <div 
+                    className="h-full bg-gradient-to-r from-primary/80 to-primary shadow-[0_0_15px_-3px_rgba(255,107,0,0.5)] transition-all duration-1000 ease-out rounded-full"
+                    style={{ width: `${credits?.total ? ((credits.total - (credits.remaining || 0)) / credits.total) * 100 : 0}%` }}
+                />
+             </div>
           </div>
         </div>
 
@@ -67,41 +59,38 @@ export const PlanUsage: React.FC<PlanUsageProps> = ({ credits, schedules, limits
         {/* Schedules */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                <Calendar className="h-4 w-4 text-blue-500" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-white">Active Schedules</p>
-                <p className="text-xs text-gray-500">Automated tasks</p>
-              </div>
+            <div className="flex items-center gap-2">
+              <Calendar className="h-3.5 w-3.5 text-primary" />
+              <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Active Automation</p>
             </div>
             <div className="text-right">
-              <p className="text-lg font-bold text-white">
+              <p className="text-sm font-black text-white tracking-tight">
                 {schedules.filter(s => s.enabled).length}
-                <span className="text-sm font-normal text-gray-500">
+                <span className="text-[10px] font-bold text-slate-500 uppercase ml-1">
                    / {limits?.maxSchedules === -1 ? '∞' : limits?.maxSchedules}
                 </span>
               </p>
-              <p className="text-xs text-gray-500">
-                Schedules Active
-              </p>
             </div>
           </div>
-          <div className="space-y-1">
-            <Progress 
-                value={limits?.maxSchedules && limits.maxSchedules > 0 
-                    ? (schedules.filter(s => s.enabled).length / limits.maxSchedules) * 100 
-                    : 0} 
-                className="h-2 bg-white/5"
-                indicatorClassName="bg-blue-500"
-            />
+          <div className="relative pt-1">
+             <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+                <div 
+                    className="h-full bg-gradient-to-r from-primary/80 to-primary shadow-[0_0_15px_-3px_rgba(255,107,0,0.4)] transition-all duration-1000 ease-out rounded-full"
+                    style={{ width: `${limits?.maxSchedules && limits.maxSchedules > 0 
+                        ? (schedules.filter(s => s.enabled).length / limits.maxSchedules) * 100 
+                        : 0}%` }}
+                />
+             </div>
           </div>
         </div>
         
         <div className="pt-2">
-           <Button variant="outline" className="w-full text-xs h-9 border-white/10 bg-white/5 hover:bg-white/10 text-white" onClick={() => window.open(`${API_CONFIG.dashboardURL}/dashboard/billing`, '_blank')}>
-               Manage Plan & Limits <ExternalLink className="ml-2 h-3 w-3" />
+           <Button 
+                variant="ghost" 
+                className="w-full text-[11px] h-10 border border-white/5 bg-white/[0.03] hover:bg-primary/20 hover:text-primary hover:border-primary/30 text-slate-300 font-black uppercase tracking-widest rounded-2xl transition-all" 
+                onClick={() => window.open(`${API_CONFIG.dashboardURL}/dashboard/billing`, '_blank')}
+            >
+               Manage Subscription <ExternalLink className="ml-2 h-3.5 w-3.5" />
            </Button>
         </div>
       </div>

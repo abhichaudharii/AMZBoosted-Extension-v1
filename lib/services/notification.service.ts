@@ -286,10 +286,10 @@ class NotificationService {
     private getIconForType(type: 'success' | 'error' | 'info' | 'warning'): string {
         // Use chrome.runtime.getURL to get proper extension URL
         const icons = {
-            success: chrome.runtime.getURL('/icon/128.png'),
-            error: chrome.runtime.getURL('/icon/128.png'),
-            info: chrome.runtime.getURL('/icon/128.png'),
-            warning: chrome.runtime.getURL('/icon/128.png'),
+            success: chrome.runtime.getURL('/amzboosted_logo.png'),
+            error: chrome.runtime.getURL('/amzboosted_logo.png'),
+            info: chrome.runtime.getURL('/amzboosted_logo.png'),
+            warning: chrome.runtime.getURL('/amzboosted_logo.png'),
         };
         return icons[type];
     }

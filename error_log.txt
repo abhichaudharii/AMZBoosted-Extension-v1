@@ -1,0 +1,70 @@
+sslmode='require' failed for aws-0-us-west-1.pooler.supabase.com:6543/postgres: connection to server at "aws-0-us-west-1.pooler.supabase.com" (54.177.55.191), port 6543 failed: FATAL:  Tenant or user not found
+
+Standard connection failed for aws-0-us-west-1.pooler.supabase.com:6543/postgres: connection to server at "aws-0-us-west-1.pooler.supabase.com" (54.177.55.191), port 6543 failed: FATAL:  Tenant or user not found
+connection to server at "aws-0-us-west-1.pooler.supabase.com" (54.177.55.191), port 6543 failed: FATAL:  Tenant or user not found
+
+sslmode='require' failed for aws-0-us-west-1.pooler.supabase.com:5432/postgres: connection to server at "aws-0-us-west-1.pooler.supabase.com" (54.177.55.191), port 5432 failed: FATAL:  Tenant or user not found
+
+Standard connection failed for aws-0-us-west-1.pooler.supabase.com:5432/postgres: connection to server at "aws-0-us-west-1.pooler.supabase.com" (54.177.55.191), port 5432 failed: FATAL:  Tenant or user not found
+connection to server at "aws-0-us-west-1.pooler.supabase.com" (54.177.55.191), port 5432 failed: FATAL:  Tenant or user not found
+
+sslmode='require' failed for aws-0-us-west-1.pooler.supabase.com:6543/postgres: connection to server at "aws-0-us-west-1.pooler.supabase.com" (54.177.55.191), port 6543 failed: FATAL:  Tenant or user not found
+
+Standard connection failed for aws-0-us-west-1.pooler.supabase.com:6543/postgres: connection to server at "aws-0-us-west-1.pooler.supabase.com" (54.177.55.191), port 6543 failed: FATAL:  Tenant or user not found
+connection to server at "aws-0-us-west-1.pooler.supabase.com" (54.177.55.191), port 6543 failed: FATAL:  Tenant or user not found
+
+sslmode='require' failed for aws-0-us-west-1.pooler.supabase.com:5432/postgres: connection to server at "aws-0-us-west-1.pooler.supabase.com" (54.177.55.191), port 5432 failed: FATAL:  Tenant or user not found
+
+Standard connection failed for aws-0-us-west-1.pooler.supabase.com:5432/postgres: connection to server at "aws-0-us-west-1.pooler.supabase.com" (54.177.55.191), port 5432 failed: FATAL:  Tenant or user not found
+connection to server at "aws-0-us-west-1.pooler.supabase.com" (54.177.55.191), port 5432 failed: FATAL:  Tenant or user not found
+
+sslmode='require' failed for aws-0-us-west-1.pooler.supabase.com:6543/postgres: connection to server at "aws-0-us-west-1.pooler.supabase.com" (54.177.55.191), port 6543 failed: FATAL:  Tenant or user not found
+
+Standard connection failed for aws-0-us-west-1.pooler.supabase.com:6543/postgres: connection to server at "aws-0-us-west-1.pooler.supabase.com" (54.177.55.191), port 6543 failed: FATAL:  Tenant or user not found
+connection to server at "aws-0-us-west-1.pooler.supabase.com" (54.177.55.191), port 6543 failed: FATAL:  Tenant or user not found
+
+sslmode='require' failed for aws-0-us-west-1.pooler.supabase.com:5432/postgres: connection to server at "aws-0-us-west-1.pooler.supabase.com" (54.177.55.191), port 5432 failed: FATAL:  Tenant or user not found
+
+Standard connection failed for aws-0-us-west-1.pooler.supabase.com:5432/postgres: connection to server at "aws-0-us-west-1.pooler.supabase.com" (54.177.55.191), port 5432 failed: FATAL:  Tenant or user not found
+connection to server at "aws-0-us-west-1.pooler.supabase.com" (54.177.55.191), port 5432 failed: FATAL:  Tenant or user not found
+
+Pattern 1 failed: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 6543 failed: FATAL:  Tenant or user not found
+
+Pattern 2 failed: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 5432 failed: FATAL:  Tenant or user not found
+
+Pattern 3 failed: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 6543 failed: FATAL:  Tenant or user not found
+
+Pattern 4 failed: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 6543 failed: FATAL:  Tenant or user not found
+
+Pattern 5 failed: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 6543 failed: FATAL:  Tenant or user not found
+
+Pattern 1 failed: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 6543 failed: FATAL:  Tenant or user not found
+
+Pattern 2 failed: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 6543 failed: FATAL:  Tenant or user not found
+
+Pattern 3 failed: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 6543 failed: FATAL:  Tenant or user not found
+
+Pattern 4 failed: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 6543 failed: FATAL:  Tenant or user not found
+
+Pattern 5 failed: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 5432 failed: FATAL:  Tenant or user not found
+
+Config failed: {'host': 'aws-0-us-west-1.pooler.supabase.com', 'port': 6543, 'user': 'postgres.ricpwvbbhwkurnracbpe', 'password': '1HEdrTt4S7v4cDPZ', 'dbname': 'postgres'} | Error: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 6543 failed: FATAL:  Tenant or user not found
+
+Config failed: {'dsn': 'postgresql://postgres.ricpwvbbhwkurnracbpe:1HEdrTt4S7v4cDPZ@aws-0-us-west-1.pooler.supabase.com:6543/postgres'} | Error: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 6543 failed: FATAL:  Tenant or user not found
+
+Config failed: {'dsn': 'postgresql://postgres.ricpwvbbhwkurnracbpe:1HEdrTt4S7v4cDPZ@aws-0-us-west-1.pooler.supabase.com:5432/postgres'} | Error: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 5432 failed: FATAL:  Tenant or user not found
+
+Config failed: {'dsn': 'postgresql://postgres:1HEdrTt4S7v4cDPZ@aws-0-us-west-1.pooler.supabase.com:6543/postgres', 'options': '-c project=ricpwvbbhwkurnracbpe'} | Error: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 6543 failed: FATAL:  Tenant or user not found
+
+Config failed: {'host': 'aws-0-us-west-1.pooler.supabase.com', 'port': 6543, 'user': 'postgres.ricpwvbbhwkurnracbpe', 'password': '1HEdrTt4S7v4cDPZ', 'dbname': 'postgres'} | Error: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 6543 failed: FATAL:  Tenant or user not found
+
+Config failed: {'host': 'aws-0-us-west-1.pooler.supabase.com', 'port': 6543, 'user': 'ricpwvbbhwkurnracbpe', 'password': '1HEdrTt4S7v4cDPZ', 'dbname': 'postgres'} | Error: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 6543 failed: FATAL:  Tenant or user not found
+
+Config failed: {'dsn': 'postgresql://ricpwvbbhwkurnracbpe.postgres:1HEdrTt4S7v4cDPZ@aws-0-us-west-1.pooler.supabase.com:6543/postgres'} | Error: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 6543 failed: FATAL:  Tenant or user not found
+
+Config failed: {'dsn': 'postgresql://postgres:1HEdrTt4S7v4cDPZ@aws-0-us-west-1.pooler.supabase.com:6543/postgres'} | Error: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 6543 failed: FATAL:  Tenant or user not found
+
+Config failed: {'host': 'aws-0-us-west-1.pooler.supabase.com', 'port': 6543, 'user': 'postgres', 'password': '1HEdrTt4S7v4cDPZ', 'dbname': 'postgres'} | Error: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 6543 failed: FATAL:  Tenant or user not found
+
+Config failed: {'dsn': 'postgresql://postgres:1HEdrTt4S7v4cDPZ@aws-0-us-west-1.pooler.supabase.com:6543/postgres'} | Error: connection to server at "aws-0-us-west-1.pooler.supabase.com" (52.8.172.168), port 6543 failed: FATAL:  Tenant or user not found
+

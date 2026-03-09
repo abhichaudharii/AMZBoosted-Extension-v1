@@ -33,7 +33,7 @@ interface SchedulesDialogsProps {
 
   restrictionOpen: boolean;
   setRestrictionOpen: (open: boolean) => void;
-  restrictionState: SubscriptionState;
+  subscriptionState: SubscriptionState;
 }
 
 export const SchedulesDialogs: React.FC<SchedulesDialogsProps> = ({
@@ -58,7 +58,7 @@ export const SchedulesDialogs: React.FC<SchedulesDialogsProps> = ({
   confirmBulkDelete,
   restrictionOpen,
   setRestrictionOpen,
-  restrictionState,
+  subscriptionState,
 }) => {
   return (
     <>
@@ -117,7 +117,7 @@ export const SchedulesDialogs: React.FC<SchedulesDialogsProps> = ({
       <PlanRestrictionDialog
         open={restrictionOpen}
         onClose={() => setRestrictionOpen(false)}
-        state={restrictionState}
+        state={subscriptionState}
       />
     </>
   );

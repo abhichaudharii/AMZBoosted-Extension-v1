@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { PageLoading } from '@/components/ui/page-loading';
 import {
   FileSpreadsheet,
   RefreshCw,
   HardDrive,
-  Plug,
   Lock,
   Cloud,
   Info,
@@ -19,8 +17,10 @@ import {
   ExternalLink,
   Trash2,
   Zap,
-  Loader2
+  Loader2,
+  ChevronRight
 } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import {
   Popover,
   PopoverContent,
@@ -79,6 +79,26 @@ export const IntegrationsPage: React.FC = () => {
 
   const isIntegrationLocked = (integrationKey: string) => !checkPermission('integration', integrationKey);
 
+  const triggerConfetti = () => {
+    const duration = 3 * 1000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+    const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+    const interval: any = setInterval(function() {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+    }, 250);
+  };
+
   const handleConnectClick = (rec: IntegrationDefinition) => {
     // Check lock status
     if (isIntegrationLocked(rec.key) || rec.is_locked) {
@@ -102,7 +122,7 @@ export const IntegrationsPage: React.FC = () => {
         setSlackOpen(true);
     } else {
         // Fallback for direct connect
-        connectIntegration(rec.id);
+        connectIntegration(rec.id).then(() => triggerConfetti());
     }
   };
 
@@ -125,6 +145,7 @@ export const IntegrationsPage: React.FC = () => {
   const onGoogleConnect = async (config: any) => {
       if (targetDefinitionId) {
           await connectIntegration(targetDefinitionId, null, config);
+          triggerConfetti();
           setShowGoogleModal(false);
       }
   };
@@ -141,9 +162,9 @@ export const IntegrationsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0A0A0B] p-6 lg:p-8 animate-fade-in relative overflow-hidden text-foreground">
-      {/* Ambient Background - Matched to Web */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#FF6B00]/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[#FF8533]/5 rounded-full blur-[120px] pointer-events-none" />
+      {/* Ambient Background - Relaxed Neutral Glow */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-slate-500/2 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-slate-400/2 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto space-y-12 relative z-10">
         
@@ -348,154 +369,157 @@ function IntegrationCard({
     else if (integration.key === 'slack') Icon = MessageSquare;
 
     // Color mapping
-    let colorClass = 'text-blue-400 bg-blue-500/10 border-blue-500/20 shadow-[0_0_15px_-3px_rgba(59,130,246,0.1)]';
-    if (integration.key.includes('google')) colorClass = 'text-green-400 bg-green-500/10 border-green-500/20 shadow-[0_0_15px_-3px_rgba(34,197,94,0.1)]';
-    else if (integration.key === 'telegram') colorClass = 'text-sky-400 bg-sky-500/10 border-sky-500/20 shadow-[0_0_15px_-3px_rgba(14,165,233,0.1)]';
-    else if (integration.key === 'discord') colorClass = 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20 shadow-[0_0_15px_-3px_rgba(99,102,241,0.1)]';
-    else if (integration.key === 'slack') colorClass = 'text-purple-400 bg-purple-500/10 border-purple-500/20 shadow-[0_0_15px_-3px_rgba(168,85,247,0.1)]';
+    let colorClass = 'text-blue-400 bg-blue-500/10 border-blue-500/20';
+    if (integration.key.includes('google')) colorClass = 'text-green-400 bg-green-500/10 border-green-500/20';
+    else if (integration.key === 'telegram') colorClass = 'text-sky-400 bg-sky-500/10 border-sky-500/20';
+    else if (integration.key === 'discord') colorClass = 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20';
+    else if (integration.key === 'slack') colorClass = 'text-purple-400 bg-purple-500/10 border-purple-500/20';
 
     return (
         <div 
           className={cn(
-            "relative overflow-hidden rounded-2xl border transition-all duration-500 group flex flex-col h-full",
+            "relative overflow-hidden rounded-3xl border transition-all duration-500 group flex flex-col h-full cursor-pointer",
             integration.is_connected 
-              ? "bg-gradient-to-br from-[#1A1A1C] to-[#0A0A0B] border-[#FF6B00]/30 shadow-[0_0_30px_-10px_rgba(255,107,0,0.15)]" 
-              : "bg-[#0A0A0B]/60 backdrop-blur-xl border-white/5 hover:border-white/10 hover:shadow-2xl hover:shadow-black/50 hover:-translate-y-1"
+              ? "bg-[#0A0A0B]/80 border-primary/30 shadow-[0_0_40px_-15px_rgba(255,107,0,0.1)] hover:border-primary/50" 
+              : "bg-[#0A0A0B]/40 backdrop-blur-md border-white/5 hover:border-white/20 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/50"
           )}
+          onClick={() => {
+              if (locked && !integration.is_connected) return; // Let the overlay handle it
+              if (integration.is_connected) return; // Don't trigger connect if already connected
+              onConnect();
+          }}
         >
             {/* Ambient Background Glow for connected items */}
             {integration.is_connected && (
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#FF6B00]/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none transition-opacity group-hover:opacity-100 opacity-60" />
             )}
             
             {/* Locked Overlay */}
             {locked && !integration.is_connected && (
-                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#0A0A0B]/80 backdrop-blur-sm p-4 text-center">
-                    <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-3">
-                        <Lock className="w-4 h-4 text-gray-400" />
+                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#0A0A0B]/80 backdrop-blur-sm p-6 text-center" onClick={(e) => { e.stopPropagation(); onConnect(); }}>
+                    <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-4 text-gray-400 group-hover:text-primary group-hover:border-primary/50 transition-colors">
+                        <Lock className="w-5 h-5" />
                     </div>
-                    <p className="text-sm font-bold text-white mb-1">Upgrade Required</p>
-                    <p className="text-xs text-gray-400 mb-3 text-balance">
+                    <p className="text-base font-bold text-white mb-2">Premium Feature</p>
+                    <p className="text-xs text-gray-500 mb-4 px-4 leading-relaxed">
                         {upgradeMessage}
                     </p>
-                    <Button size="sm" className="h-7 text-xs bg-[#FF6B00] hover:bg-[#FF8533] text-white">
-                        View Plans
-                    </Button>
+                    <span className="text-xs font-bold text-primary group-hover:underline flex items-center gap-1">
+                        View Upgrade Options <ChevronRight className="w-3 h-3" />
+                    </span>
                 </div>
             )}
             
-            <div className="p-6 relative z-10 flex flex-col h-full">
+            <div className="p-8 relative z-10 flex flex-col h-full">
                 {/* Header */}
-                <div className="flex justify-between items-start mb-6">
-                    <div className={cn("w-12 h-12 rounded-xl border flex items-center justify-center transition-transform duration-300 group-hover:scale-110", colorClass)}>
-                        <Icon className="w-6 h-6" />
+                <div className="flex justify-between items-start mb-8">
+                    <div className={cn("w-14 h-14 rounded-2xl border flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:border-current shadow-lg shadow-black/20", colorClass)}>
+                        <Icon className="w-7 h-7" />
                     </div>
                     
-                    {integration.is_connected && (
-                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FF6B00]/10 border border-[#FF6B00]/20">
-                            <span className="relative flex h-1.5 w-1.5">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6B00] opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#FF6B00]"></span>
+                    {integration.is_connected ? (
+                        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+                            <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                             </span>
-                            <span className="text-[10px] font-bold text-[#FF6B00] uppercase tracking-wider">Active</span>
+                            <span className="text-[10px] font-black text-primary uppercase tracking-widest">Connected</span>
                         </div>
+                    ) : (
+                         <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest group-hover:text-white transition-colors">
+                            Ready to Setup 
+                         </div>
                     )}
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 mb-6 space-y-2">
-                    <h3 className="text-lg font-bold text-white group-hover:text-[#FF6B00] transition-colors duration-300">
+                <div className="flex-1 space-y-3">
+                    <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors duration-300">
                         {integration.name}
                     </h3>
-                    <p className="text-sm text-gray-400 leading-relaxed line-clamp-2 min-h-[40px]">
+                    <p className="text-sm text-gray-400 leading-relaxed font-medium opacity-80 group-hover:opacity-100 transition-opacity">
                          {integration.category === 'notification_channel' 
-                            ? `Receive real-time alerts and reports directly in ${integration.name}.`
-                            : `Sync and export your Amazon data to ${integration.name}.`
+                            ? `Automate real-time alerts and reports directly in ${integration.name}.`
+                            : `Seamlessly sync your Amazon Seller data to ${integration.name} automatically.`
                         }
                     </p>
                 </div>
 
-                {/* Footer Actions */}
-                <div className="pt-4 border-t border-white/5 flex gap-2">
+                {/* Footer / Status Actions */}
+                <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between">
                     {integration.is_connected ? (
                         <>
-                            <Button 
-                                variant="ghost" 
-                                className="flex-1 h-9 text-xs justify-center text-red-400 hover:text-red-300 hover:bg-red-500/10 border border-transparent hover:border-red-500/20"
-                                onClick={onDisconnect}
-                                disabled={isLoading}
-                            >
-                                <span className="flex items-center gap-2">
-                                    {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                            <div className="flex items-center gap-3">
+                                <Button 
+                                    variant="ghost" 
+                                    size="sm"
+                                    className="h-9 px-3 text-xs font-bold text-red-500/70 hover:text-red-500 hover:bg-red-500/10 rounded-xl"
+                                    onClick={(e) => { e.stopPropagation(); onDisconnect(); }}
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-2" /> : <Trash2 className="w-3.5 h-3.5 mr-2" />}
                                     Disconnect
-                                </span>
-                            </Button>
-                            
-                            <Button 
-                                variant="ghost" 
-                                className="h-9 w-9 p-0 text-gray-400 hover:text-white hover:bg-white/10"
-                                onClick={onSync}
-                                disabled={syncing || isLoading}
-                            >
-                                <RefreshCw className={cn("w-4 h-4", syncing && "animate-spin")} />
-                            </Button>
+                                </Button>
+
+                                <Button 
+                                    variant="ghost" 
+                                    size="icon"
+                                    className="h-9 w-9 text-gray-500 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+                                    onClick={(e) => { e.stopPropagation(); onSync(); }}
+                                    disabled={syncing || isLoading}
+                                >
+                                    <RefreshCw className={cn("w-4 h-4", syncing && "animate-spin text-primary")} />
+                                </Button>
+                            </div>
 
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button variant="ghost" className="h-9 w-9 p-0 text-gray-400 hover:text-white hover:bg-white/10">
+                                    <Button variant="ghost" size="icon" className="h-9 w-9 text-gray-500 hover:text-white hover:bg-white/5 rounded-xl" onClick={(e) => e.stopPropagation()}>
                                         <Info className="w-4 h-4" />
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-80 bg-[#1A1A1C] border-white/10 text-white p-4">
-                                    <h4 className="font-semibold mb-3 flex items-center gap-2 text-sm border-b border-white/10 pb-2">
-                                        <ShieldCheck className="w-4 h-4 text-green-500" />
-                                        Connection Details
-                                    </h4>
-                                    <div className="space-y-3 text-xs text-gray-400">
-                                        <div className="flex justify-between items-center">
-                                            <span>Status</span>
-                                            <span className="text-green-400 font-mono bg-green-500/10 px-1.5 py-0.5 rounded">Active</span>
+                                <PopoverContent className="w-80 bg-[#141416] border-white/10 text-white p-5 rounded-3xl shadow-2xl shadow-black/80" align="end" onClick={(e) => e.stopPropagation()}>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-3 border-b border-white/5 pb-3">
+                                            <div className="p-2 rounded-lg bg-green-500/10 text-green-500">
+                                                <ShieldCheck className="w-4 h-4" />
+                                            </div>
+                                            <h4 className="font-bold text-sm">Active Connection</h4>
                                         </div>
-                                        <div className="flex justify-between items-center">
-                                            <span>Connected Since</span>
-                                            <span className="text-white font-medium">
-                                                {integration.connected_at 
-                                                    ? new Date(integration.connected_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) 
-                                                    : 'Just now'}
-                                            </span>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span>Type</span>
-                                            <span className="capitalize">{integration.category.replace('_', ' ')}</span>
-                                        </div>
-                                        <div className="p-2.5 bg-black/40 rounded-lg mt-1 border border-white/5 leading-relaxed">
-                                            <div className="flex gap-2">
-                                                <div className="h-1.5 w-1.5 rounded-full bg-green-500 mt-1.5 shrink-0 animate-pulse" />
-                                                This integration is listening for events and ready to process data.
+                                        <div className="space-y-4 text-xs font-medium text-gray-400">
+                                            <div className="flex justify-between items-center bg-white/5 p-2 rounded-lg">
+                                                <span>Status</span>
+                                                <span className="text-green-500 uppercase tracking-tighter font-black">Stable</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span>Encryption</span>
+                                                <span className="text-white">AES-256 Bit</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span>Connected</span>
+                                                <span className="text-white">
+                                                    {integration.connected_at 
+                                                        ? new Date(integration.connected_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) 
+                                                        : 'Recent'}
+                                                </span>
                                             </div>
                                         </div>
+                                        <p className="text-[10px] text-gray-500 leading-relaxed italic bg-black/20 p-3 rounded-xl border border-white/5">
+                                            This connection is fully authenticated and synced. Reports will flow automatically according to your schedules.
+                                        </p>
                                     </div>
                                 </PopoverContent>
                             </Popover>
                         </>
                     ) : (
-                        <Button 
-                            className={cn(
-                                "w-full justify-center font-bold shadow-lg transition-all duration-300",
-                                locked 
-                                   ? "bg-white/5 text-gray-500 hover:bg-white/10 shadow-none hover:text-white"
-                                   : "bg-white text-black hover:bg-gray-200 shadow-white/10 hover:shadow-white/20"
-                            )}
-                            onClick={onConnect}
-                            disabled={isLoading}
-                        >
-                            {isLoading ? (
-                                <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                            ) : (
-                                <Plug className="w-4 h-4 mr-2" />
-                            )}
-                            {locked ? "Upgrade to Connect" : "Connect Now"}
-                        </Button>
+                        <div className="w-full flex items-center justify-between group/action">
+                             <span className="text-[11px] font-bold text-gray-500 group-hover:text-primary transition-colors">
+                                {locked ? 'Premium Access Only' : 'Click to Setup Service'}
+                             </span>
+                             <div className="p-2 rounded-full bg-white/5 text-gray-500 ring-1 ring-white/5 group-hover:bg-primary group-hover:text-black group-hover:ring-primary/20 transition-all duration-300">
+                                <Zap size={14} className={cn(locked && "opacity-20")} />
+                             </div>
+                        </div>
                     )}
                 </div>
             </div>

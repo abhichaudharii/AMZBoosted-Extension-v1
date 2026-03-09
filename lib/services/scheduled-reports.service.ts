@@ -230,7 +230,7 @@ class ScheduledReportsService {
         const accessToken = await this.getAccessToken();
 
         const response = await fetch(
-            `${import.meta.env.VITE_API_URL || 'https://amzboosted.com/api'} /reports/send`,
+            `${import.meta.env.VITE_API_URL || 'https://amzboosted.com/api'}/reports/send`,
             {
                 method: 'POST',
                 headers: {

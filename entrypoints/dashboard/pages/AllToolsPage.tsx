@@ -312,7 +312,7 @@ export const AllToolsPage: React.FC = () => {
                  </div>
             ) : (
                 <div className="flex items-center gap-1.5 text-xs font-medium text-gray-500 group-hover:text-white transition-colors">
-                    <Zap className="w-3.5 h-3.5 text-orange-500 fill-orange-500" />
+                    <Zap className="w-3.5 h-3.5 text-blue-500 fill-blue-500" />
                     <span>{tool.credits} credit</span>
                 </div>
             )}
@@ -335,20 +335,20 @@ export const AllToolsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#0A0A0B] p-6 lg:p-8 animate-fade-in relative overflow-hidden text-foreground pb-20">
       
-       {/* Ambient Background - Matching AccountPage/SchedulesPage */}
-       <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[#FF6B00]/5 rounded-full blur-[120px] pointer-events-none" />
-       <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-[#FF8533]/5 rounded-full blur-[120px] pointer-events-none" />
+       {/* Ambient Background - Neutral Calm */}
+       <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
+       <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-slate-500/5 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto space-y-8 relative z-10">
             {/* Header */}
            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
                 <div>
                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-gray-400 mb-4">
-                       <Wrench className="w-3 h-3 text-[#FF6B00]" />
+                       <Wrench className="w-3 h-3 text-primary" />
                        <span>Tools Suite</span>
                    </div>
                    <h1 className="text-4xl font-extrabold text-white mb-3 tracking-tight">
-                    Tools & <span className="text-[#FF6B00]">Utilities</span>
+                    Tools & <span className="text-primary">Utilities</span>
                    </h1>
                    <p className="text-lg text-gray-400 max-w-2xl leading-relaxed">
                     Access our powerful collection of Amazon seller tools. Analyze, optimize, and grow your business.
@@ -361,7 +361,7 @@ export const AllToolsPage: React.FC = () => {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                         <Input 
                             placeholder="Find a tool..." 
-                            className="bg-[#0A0A0B]/60 border-white/10 text-white pl-9 focus:border-[#FF6B00]/50 h-10"
+                            className="bg-[#0A0A0B]/60 border-white/10 text-white pl-9 focus:border-primary/50 h-10"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />

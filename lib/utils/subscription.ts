@@ -157,7 +157,7 @@ export function getTrialProgress(trialEndsAt: string | Date | null): TrialProgre
 
     const endDate = typeof trialEndsAt === 'string' ? new Date(trialEndsAt) : trialEndsAt;
     const now = new Date();
-    const daysRemaining = Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+    const daysRemaining = Math.max(0, Math.floor((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
     const totalDays = 14; // Assuming 14-day trial
     const percentage = Math.max(0, Math.min(100, (daysRemaining / totalDays) * 100));
 

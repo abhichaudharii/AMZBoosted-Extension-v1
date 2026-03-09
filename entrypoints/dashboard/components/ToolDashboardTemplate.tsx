@@ -182,8 +182,6 @@ export const ToolDashboardTemplate: React.FC<ToolDashboardTemplateProps> = ({
        <ToolPageLayout
             title={config.name}
             icon={Icon}
-            category={config.category}
-            iconBgClass={styles.iconBg}
             iconColorClass={styles.iconColor}
             showBackButton={!!onBack}
         >
@@ -264,8 +262,8 @@ export const ToolDashboardTemplate: React.FC<ToolDashboardTemplateProps> = ({
         value: creditsUsed.toLocaleString(), 
         icon: Zap, 
         subtitle: timeRange === 'all' ? 'Lifetime limit' : 'Used this period',
-        colorClass: "text-orange-500",
-        bgClass: "bg-orange-500/10"
+        colorClass: "text-blue-500",
+        bgClass: "bg-blue-500/10"
     },
     {
         title: "Total Requests",
@@ -298,9 +296,7 @@ export const ToolDashboardTemplate: React.FC<ToolDashboardTemplateProps> = ({
         title={`${config.name}`}
         subtitle={config.description}
         icon={Icon}
-        category={config.category}
         lastActive={lastRunText}
-        iconBgClass={styles.iconBg}
         iconColorClass={styles.iconColor}
         badge="Tool Dashboard"
         showBackButton={!!onBack}

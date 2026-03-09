@@ -34,9 +34,9 @@ export const SchedulesPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0A0A0B] p-6 lg:p-8 animate-fade-in relative overflow-hidden text-foreground pb-24">
-       {/* Ambient Background */}
-       <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[#FF6B00]/5 rounded-full blur-[120px] pointer-events-none" />
-       <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-[#FF8533]/5 rounded-full blur-[120px] pointer-events-none" />
+       {/* Ambient Background - Relaxed Neutral Glow */}
+       <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-slate-500/2 rounded-full blur-[120px] pointer-events-none" />
+       <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-slate-400/2 rounded-full blur-[120px] pointer-events-none" />
 
        <div className="max-w-7xl mx-auto space-y-8 relative z-10">
            {/* Header */}
@@ -53,10 +53,10 @@ export const SchedulesPage: React.FC = () => {
                    Manage and monitor your automated schedules.
                    </p>
                </div>
-               <Button onClick={logic.handleCreateNew} className="bg-[#FF6B00] hover:bg-[#FF8533] text-white shadow-lg shadow-orange-500/20 px-6">
-                    <Play className="w-4 h-4 mr-2" />
-                    New Schedule
-               </Button>
+                <Button onClick={logic.handleCreateNew} className="bg-primary hover:bg-primary/90 text-black font-black shadow-lg shadow-primary/20 px-8 rounded-2xl transition-all duration-300 hover:-translate-y-0.5">
+                     <Play className="w-4 h-4 mr-2" />
+                     New Schedule
+                </Button>
            </div>
 
            {/* Stats */}

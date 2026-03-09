@@ -1,8 +1,9 @@
-
+import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Star, Lock } from 'lucide-react';
+import { toast } from 'sonner';
 // PageHeader removed as it was unused in the render, but if we want to use it we can. 
 // For now removing to fix lint.
 
@@ -56,8 +57,9 @@ export const ToolComingSoonPage: React.FC<ToolComingSoonPageProps> = ({
             size="lg"
             className="group relative overflow-hidden bg-primary/90 hover:bg-primary shadow-lg hover:shadow-primary/25 transition-all duration-300"
             onClick={() => {
-                // TODO: Implement notify me logic
-                alert("You've been added to the waitlist! We'll notify you when it's ready.");
+                toast.success("Joined Waitlist!", {
+                  description: `We'll notify you as soon as ${toolName} is ready for prime time.`,
+                });
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />

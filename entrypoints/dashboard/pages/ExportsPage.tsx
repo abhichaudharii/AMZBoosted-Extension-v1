@@ -283,7 +283,7 @@ export const ExportsPage: React.FC = () => {
 
   return (
     <ToolPageLayout
-        title='My <span class="text-[#FF6B00]">Exports</span>'
+        title='My <span className="text-[#FF6B00]">Exports</span>'
         subtitle="Access and manage your generated reports and data exports."
         icon={Download}
         badge="Data Management"
@@ -404,10 +404,10 @@ export const ExportsPage: React.FC = () => {
                              <div
                                  key={item.id}
                                  className={cn(
-                                     "group relative flex items-center gap-4 p-4 rounded-xl border transition-all duration-300 hover:cursor-pointer",
+                                     "group relative flex items-center gap-5 p-5 rounded-3xl border transition-all duration-500 hover:cursor-pointer overflow-hidden",
                                      isSelected 
-                                         ? "bg-[#FF6B00]/10 border-[#FF6B00]/40 shadow-[0_0_15px_-5px_rgba(255,107,0,0.2)]" 
-                                         : "bg-[#0A0A0B]/60 backdrop-blur-xl border-white/5 hover:border-white/10 hover:shadow-[0_0_20px_-5px_rgba(255,107,0,0.1)] hover:-translate-y-0.5"
+                                         ? "bg-primary/10 border-primary/40 shadow-[0_0_30px_-10px_rgba(255,107,0,0.2)]" 
+                                         : "bg-[#0A0A0B]/40 backdrop-blur-md border-white/5 hover:border-white/20 hover:shadow-2xl hover:shadow-black/50 hover:-translate-y-1"
                                  )}
                                  onClick={(e) => {
                                      // Prevent triggering if clicked on button
@@ -416,58 +416,61 @@ export const ExportsPage: React.FC = () => {
                                      toggleSelection(item.id);
                                  }}
                              >
+                                 {/* Ambient Background Glow on Hover */}
+                                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
                                  <Checkbox 
                                      checked={isSelected}
                                      onCheckedChange={() => toggleSelection(item.id)}
-                                     className="border-white/20 data-[state=checked]:bg-[#FF6B00] data-[state=checked]:border-[#FF6B00] mr-2"
+                                     className="border-white/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary mr-2 relative z-10"
                                  />
 
-                                 <div className="flex-shrink-0 p-3 rounded-lg bg-white/5 border border-white/5 group-hover:border-[#FF6B00]/20 transition-colors">
+                                 <div className="flex-shrink-0 p-3 rounded-2xl bg-white/5 border border-white/5 group-hover:border-primary/20 transition-all duration-500 group-hover:scale-110 relative z-10 shadow-lg shadow-black/20">
                                      {getIconForType(item.format)}
                                  </div>
 
-                                 <div className="flex-1 min-w-0">
-                                     <div className="flex items-center gap-2 mb-1">
+                                 <div className="flex-1 min-w-0 relative z-10">
+                                     <div className="flex items-center gap-3 mb-2">
                                          <h4 className={cn(
-                                             "font-bold text-base transition-colors truncate",
-                                             isSelected ? "text-white" : "text-white group-hover:text-[#FF6B00]"
+                                             "font-bold text-lg transition-colors truncate tracking-tight",
+                                             isSelected ? "text-white" : "text-white group-hover:text-primary"
                                          )}>
                                              {item.name || item.fileName}
                                          </h4>
                                          {/* Marketplace Badge with Flag */}
                                          {item.marketplace && (
-                                             <Badge variant="outline" className="ml-2 gap-1.5 border-white/10 bg-white/5 text-gray-300 font-normal hover:bg-white/10">
+                                             <Badge variant="outline" className="gap-1.5 border-white/10 bg-white/5 text-gray-400 font-bold hover:bg-white/10 px-2 py-0.5 rounded-lg scale-90 origin-left">
                                                  {Flag && <Flag className="w-3.5 h-3.5 rounded-sm" />}
-                                                 <span className="uppercase">{item.marketplace}</span>
+                                                 <span className="uppercase tracking-widest text-[9px]">{item.marketplace}</span>
                                              </Badge>
                                          )}
                                      </div>
                                      
-                                     <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
-                                          <Badge variant="secondary" className="bg-white/5 text-gray-400 hover:bg-white/10 border-transparent text-[10px] h-5 uppercase font-mono">
+                                     <div className="flex flex-wrap items-center gap-4 text-[11px] font-medium text-gray-500">
+                                          <Badge variant="secondary" className="bg-white/5 text-gray-400 hover:bg-white/10 border-transparent text-[9px] h-5 uppercase font-black tracking-widest px-1.5">
                                              {item.format}
-                                         </Badge>
-                                         <div className="flex items-center gap-1">
-                                             <Clock className="w-3 h-3" />
-                                             {format(new Date(item.createdAt), 'MMM dd, HH:mm')}
+                                          </Badge>
+                                         <div className="flex items-center gap-1.5">
+                                             <Clock className="w-3.5 h-3.5 opacity-50" />
+                                             <span className="font-mono">{format(new Date(item.createdAt), 'MMM dd, HH:mm')}</span>
                                          </div>
                                          <div className="w-1 h-1 rounded-full bg-white/10" />
-                                         <div className="font-mono">{formatBytes(item.fileSize || 0)}</div>
+                                         <div className="font-mono opacity-80">{formatBytes(item.fileSize || 0)}</div>
                                          
                                          {toolName && (
                                              <>
                                                  <div className="w-1 h-1 rounded-full bg-white/10" />
-                                                 <div className="text-gray-400">{toolName}</div>
+                                                 <div className="text-gray-400 font-semibold">{toolName}</div>
                                              </>
                                          )}
                                      </div>
                                  </div>
 
                                  {/* Actions */}
-                                 <div className="flex items-center gap-2">
+                                 <div className="flex items-center gap-3 relative z-10">
                                       <Button
                                          size="sm"
-                                         className="bg-[#FF6B00] hover:bg-[#FF8533] text-white font-medium shadow-lg shadow-orange-500/10"
+                                         className="bg-primary hover:bg-primary/90 text-black font-black shadow-lg shadow-primary/20 rounded-xl px-4"
                                          onClick={() => handleDownload(item)}
                                          disabled={isDownloading}
                                      >
@@ -477,7 +480,7 @@ export const ExportsPage: React.FC = () => {
                                          variant="ghost"
                                          size="icon"
                                          onClick={() => setDeleteId(item.id)}
-                                         className="text-gray-500 hover:text-red-400 hover:bg-red-500/10"
+                                         className="text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all"
                                       >
                                           <Trash2 className="w-4 h-4" />
                                       </Button>
