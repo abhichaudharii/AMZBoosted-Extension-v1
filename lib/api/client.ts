@@ -32,6 +32,8 @@ import { FeaturesService } from './services/features';
 import { SettingsService } from './services/settings';
 import { SchedulesService } from './services/schedules';
 import { BillingService } from './services/billing';
+import { TasksService, type StartTaskRequest, type StartTaskResponse, type FinalizeTaskRequest, type FinalizeTaskResponse, type TaskStatusResponse } from './services/tasks';
+export type { StartTaskRequest, StartTaskResponse, FinalizeTaskRequest, FinalizeTaskResponse, TaskStatusResponse };
 
 const REQUEST_TIMEOUT = API_CONFIG.timeout;
 const MAX_RETRIES = API_CONFIG.maxRetries;
@@ -565,6 +567,26 @@ class APIClient implements IAPIClient {
 
     async post<T>(endpoint: string, body?: any): Promise<T> {
         return BillingService.post(this, endpoint, body);
+    }
+
+    // ============================================
+    // TASKS (Refund System)
+    // ============================================
+
+    async startTask(data: StartTaskRequest): Promise<StartTaskResponse | null> {
+        return TasksService.startTask(this, data);
+    }
+
+    async finalizeTask(taskId: string, data: FinalizeTaskRequest): Promise<FinalizeTaskResponse | null> {
+        return TasksService.finalizeTask(this, taskId, data);
+    }
+
+    async getTask(taskId: string): Promise<TaskStatusResponse | null> {
+        return TasksService.getTask(this, taskId);
+    }
+
+    async taskHeartbeat(taskId: string): Promise<void> {
+        return TasksService.heartbeat(this, taskId);
     }
 }
 
