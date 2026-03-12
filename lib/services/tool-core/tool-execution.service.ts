@@ -11,6 +11,7 @@ import { enrichSQPData } from '@/lib/services/tools/sqp-universal.service';
 import { generateExcel } from '@/lib/utils/excel';
 
 import { ToolExecutionProgress, ToolRunConfig, ToolRunResult } from '@/lib/types/tool-execution';
+import { classifyError } from '@/lib/utils/error-classifier';
 
 // Core services
 import { toolBrowserService } from './tool-browser.service';
@@ -70,6 +71,40 @@ export class ToolExecutionService {
     }
 
     /**
+     * Finalize a task on the server and handle any credit refund notification.
+     * Always called after tool execution, success or failure.
+     */
+    private async finalizeTaskOnServer(
+        taskId: string,
+        successCount: number,
+        failedCount: number,
+        errorTypes: string[],
+        startTime: number
+    ): Promise<void> {
+        try {
+            const result = await apiClient.finalizeTask(taskId, {
+                successfulCount: successCount,
+                failedCount: failedCount,
+                errorTypes,
+                durationMs: Date.now() - startTime,
+            });
+
+            if (result && result.creditsRefunded > 0) {
+                await notificationService.showNotification(
+                    `${result.creditsRefunded} credit${result.creditsRefunded !== 1 ? 's' : ''} refunded`,
+                    'System errors were detected — your credits have been returned.'
+                );
+                // Sync the updated balance into the extension UI
+                await creditsService.refresh();
+            }
+        } catch (err) {
+            // Finalization failure is non-fatal: the server reconciliation cron will
+            // auto-refund credits after 4 hours if the task stays in 'processing'.
+            console.error('[Tool] Failed to finalize task on server:', taskId, err);
+        }
+    }
+
+    /**
      * Execute a tool with permission checking and backend integration
      */
     async executeTool(config: ToolRunConfig): Promise<ToolRunResult> {
@@ -110,6 +145,7 @@ export class ToolExecutionService {
 
         // 3. Permission granted - backend created task and deducted credits
         const taskId = permission.taskId!;
+        const runStartTime = Date.now();
 
         // Initialize active run state
         this.activeRuns.set(taskId, {
@@ -195,7 +231,12 @@ export class ToolExecutionService {
                 }
             );
 
-            // 6. Refresh credits
+            // 5c. Finalize task on server — applies credit refund for system errors
+            const errorTypes = results.errors.map((e: any) => classifyError(e));
+            await this.finalizeTaskOnServer(taskId, results.data.length, results.errors.length, errorTypes, runStartTime);
+
+            // 6. Refresh credits (finalizeTaskOnServer already calls this when there's a refund,
+            //    but we always refresh to sync the latest balance)
             await creditsService.refresh();
 
             // Track completion
@@ -258,6 +299,10 @@ export class ToolExecutionService {
             // Mark task as failed in IndexedDB
             await updateTaskStatus(taskId, 'failed', undefined, errorMessage);
 
+            // Finalize on server — all credits eligible for refund on full crash
+            const errorType = classifyError(error);
+            await this.finalizeTaskOnServer(taskId, 0, urls.length, [errorType], runStartTime);
+
             this.activeRuns.delete(taskId);
 
             return {
@@ -288,9 +333,10 @@ export class ToolExecutionService {
             };
         }
 
+        const scheduleRunStartTime = Date.now();
         this.activeRuns.set(taskId, {
             toolId,
-            startTime: Date.now(),
+            startTime: scheduleRunStartTime,
             progress: { total: urls.length, completed: 0, failed: 0 },
             status: 'running',
             transactionId
@@ -359,11 +405,9 @@ export class ToolExecutionService {
                     !isSuccess ? errors[0] : undefined
                 );
 
-                // If failed, refund credits
-                if (!isSuccess && creditsDeducted > 0) {
-                    // SERVER-SIDE REFUND: Server handles refunds based on task failure status
-                    logger.info('Task failed, server should handle refund', { amount: creditsDeducted });
-                }
+                // Finalize task on server — applies credit refund for system errors
+                const bgErrorTypes = errors.map((e: any) => classifyError(e));
+                await this.finalizeTaskOnServer(taskId, successfulCount, failedCount, bgErrorTypes, scheduleRunStartTime);
 
                 // Google Drive Upload (BACKGROUND CONTEXT ONLY)
                 if (isBackground && options.googleDriveEnabled && results && results.length > 0) {
@@ -392,16 +436,6 @@ export class ToolExecutionService {
             const allFailed = results.errors.length === urls.length;
             const taskStatus = allFailed ? 'failed' : 'completed';
 
-            // If some URLs failed, refund the unused credits (logging only)
-            if (actualCreditsUsed < creditsDeducted) {
-                const refundAmount = creditsDeducted - actualCreditsUsed;
-                logger.info('Partial failure, server should handle partial refund', {
-                    deducted: creditsDeducted,
-                    successful: actualCreditsUsed,
-                    refunding: refundAmount,
-                });
-            }
-
             // Update task with results in IndexedDB
             await updateTaskStatus(
                 taskId,
@@ -414,6 +448,10 @@ export class ToolExecutionService {
                     errors: results.errors,
                 }
             );
+
+            // Finalize task on server — applies credit refund for system errors
+            const stdErrorTypes = results.errors.map((e: any) => classifyError(e));
+            await this.finalizeTaskOnServer(taskId, results.data.length, results.errors.length, stdErrorTypes, scheduleRunStartTime);
 
             logger.info(`Task ${taskStatus}`, {
                 successful: results.data.length,
@@ -458,10 +496,9 @@ export class ToolExecutionService {
             // Update task with error
             await updateTaskStatus(taskId, 'failed', undefined, errorMessage);
 
-            // Refund all credits
-            if (creditsDeducted > 0) {
-                logger.info('Task execution failed, server should handle refund', { refunded: creditsDeducted });
-            }
+            // Finalize on server — crash means all credits eligible for refund
+            const crashErrorType = classifyError(error);
+            await this.finalizeTaskOnServer(taskId, 0, urls.length, [crashErrorType], scheduleRunStartTime);
 
             this.activeRuns.delete(taskId);
 

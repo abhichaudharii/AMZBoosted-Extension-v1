@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Eye, Trash2, X, FileDown, Copy, Printer, Loader2, Search, FileText } from 'lucide-react';
+import { Download, Eye, Trash2, X, FileDown, Copy, Printer, Loader2, Search, FileText, Clock, Globe, Hash, Tag, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DataTable } from '@/components/data-table/DataTable';
@@ -65,6 +65,7 @@ export const ReportsPage: React.FC = () => {
   const [filteredReports, setFilteredReports] = useState<Report[]>([]);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<{ reports: Report[]; clearSelection: () => void } | null>(null);
+  const [viewingReport, setViewingReport] = useState<Report | null>(null);
 
   // Map IndexedDB reports to UI format
   const mappedReports: Report[] = allReportsRaw.map((report) => ({
@@ -181,21 +182,9 @@ export const ReportsPage: React.FC = () => {
     }
   };
 
-  // Handle view report details
-  const handleViewReport = async (report: Report) => {
-    try {
-      if (report) {
-        // TODO: Open a modal or navigate to report details page
-        toast.info('Report details', {
-          description: `Report: ${report.name} (${report.urlCount} URLs)`,
-        });
-      }
-    } catch (error) {
-      console.error('[ReportsPage] Error viewing report:', error);
-      toast.error('Failed to load report details', {
-        description: error instanceof Error ? error.message : 'Unknown error',
-      });
-    }
+  // Handle view report details — opens detail modal
+  const handleViewReport = (report: Report) => {
+    setViewingReport(report);
   };
 
   // Handle delete single report
@@ -872,6 +861,127 @@ export const ReportsPage: React.FC = () => {
         variant="destructive"
         onConfirm={confirmDelete}
       />
+
+      {/* Report Detail Modal */}
+      {viewingReport && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          onClick={() => setViewingReport(null)}
+        >
+          <div
+            className="bg-background border border-border rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-start justify-between p-6 border-b border-border">
+              <div className="flex items-start gap-3">
+                <div className="p-2 rounded-xl bg-primary/10">
+                  <FileText className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold leading-tight">{viewingReport.name}</h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">{viewingReport.tool}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setViewingReport(null)}
+                className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 space-y-4">
+              {/* Status badge */}
+              <div className="flex items-center gap-2">
+                {viewingReport.status === 'ready' && (
+                  <span className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                    <CheckCircle className="w-3 h-3" /> Ready
+                  </span>
+                )}
+                {viewingReport.status === 'generating' && (
+                  <span className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                    <RefreshCw className="w-3 h-3 animate-spin" /> Generating
+                  </span>
+                )}
+                {viewingReport.status === 'failed' && (
+                  <span className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-red-500/10 text-red-500 border border-red-500/20">
+                    <AlertCircle className="w-3 h-3" /> Failed
+                  </span>
+                )}
+              </div>
+
+              {/* Details grid */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 rounded-xl bg-secondary/40 border border-border/50">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                    <Clock className="w-3 h-3" /> Created
+                  </div>
+                  <div className="text-sm font-semibold">
+                    {format(viewingReport.createdAt, 'MMM d, yyyy')}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {format(viewingReport.createdAt, 'h:mm a')}
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-secondary/40 border border-border/50">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                    <Globe className="w-3 h-3" /> Marketplace
+                  </div>
+                  <div className="text-sm font-semibold">{viewingReport.marketplace}</div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-secondary/40 border border-border/50">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                    <Hash className="w-3 h-3" /> Items Processed
+                  </div>
+                  <div className="text-sm font-semibold">{viewingReport.urlCount.toLocaleString()}</div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-secondary/40 border border-border/50">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+                    <Tag className="w-3 h-3" /> Format
+                  </div>
+                  <div className="text-sm font-semibold uppercase">{viewingReport.format}</div>
+                  {viewingReport.size !== 'N/A' && (
+                    <div className="text-xs text-muted-foreground">{viewingReport.size}</div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Footer actions */}
+            <div className="flex items-center gap-2 px-6 pb-6">
+              <Button
+                size="sm"
+                className="flex-1 gap-1.5"
+                disabled={viewingReport.status !== 'ready'}
+                onClick={() => {
+                  handleDownloadReport(viewingReport);
+                  setViewingReport(null);
+                }}
+              >
+                <Download className="w-3.5 h-3.5" />
+                Download
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/20"
+                onClick={() => {
+                  setViewingReport(null);
+                  handleDeleteSingleReport(viewingReport);
+                }}
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );

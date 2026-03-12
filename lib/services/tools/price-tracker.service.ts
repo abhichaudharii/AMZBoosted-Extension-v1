@@ -1,5 +1,6 @@
 import { indexedDBService } from '@/lib/services/indexed-db.service';
 import { STORES, type PriceTracker, type PriceHistory } from '@/lib/db/schema';
+import { notificationService } from '@/lib/services/notification.service';
 
 interface PriceTrackerOptions {
     marketplace: string;
@@ -283,16 +284,38 @@ class PriceTrackerService {
         // If alertRules has a percentage threshold...
 
         if (shouldNotify) {
-            // Local Notification
-            chrome.notifications.create({
-                type: 'basic',
-                iconUrl: tracker.image || 'icon-128.png', // Fallback icon
+            // Local + in-app notification via notificationService
+            await notificationService.show({
                 title: `Price Alert: ${title}`,
-                message: message,
-                priority: 2
+                message,
+                type: 'warning',
+                priority: 2,
+                requireInteraction: true,
+                relatedId: tracker.id,
+                relatedType: 'task',
             });
 
-            // TODO: Trigger external notifications if configured
+            // External notifications (Telegram, Discord, Slack) via backend API
+            try {
+                const { apiClient } = await import('@/lib/api/client');
+                await apiClient.request('/notifications/alert', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        type: 'price_alert',
+                        title: `Price Alert: ${tracker.title?.substring(0, 80)}`,
+                        message,
+                        metadata: {
+                            asin: tracker.asin,
+                            currentPrice,
+                            targetPrice: tracker.alertRules?.targetPrice,
+                            inStock,
+                        },
+                    }),
+                });
+            } catch (extNotifErr) {
+                // External notifications are best-effort — don't surface errors to user
+                console.warn('[PriceTracker] External notification failed (non-critical):', extNotifErr);
+            }
         }
     }
 
