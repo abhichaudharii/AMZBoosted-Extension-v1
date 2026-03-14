@@ -48,6 +48,10 @@ export const MarketplaceSelector: React.FC<MarketplaceSelectorProps> = ({
         </label>
       </div>
       
+      <p className="text-[10px] text-gray-500 leading-tight">
+        Requires login at <span className="font-mono text-gray-400">sellercentral.amazon.com</span>
+      </p>
+
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger 
           className="w-full bg-[#1A1A1C]/60 border-white/5 backdrop-blur-sm focus:ring-primary/20 hover:bg-white/5 transition-all text-white"

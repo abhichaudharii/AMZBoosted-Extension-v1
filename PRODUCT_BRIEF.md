@@ -74,7 +74,7 @@ Your data flows wherever you need it:
 | Native Browser Notifications | All Plans |
 
 ### Global Marketplace Support
-13 Amazon marketplaces, auto-detected, zero configuration:
+13 Amazon marketplaces supported. Log in once at `sellercentral.amazon.com` and use Amazon's native account switcher to access any marketplace account. AMZBoosted auto-detects your active marketplace — zero configuration required.
 **US · UK · DE · FR · IT · ES · CA · IN · AU · SG · JP · MX · BR**
 
 ### Privacy-First Architecture
@@ -103,79 +103,73 @@ This is where we're honest with ourselves. AMZBoosted has a strong product core 
 
 ### Product Gaps
 
-**1. No product screenshots on the landing page**
-The number one conversion driver for a browser extension is showing the actual UI. The current landing page has zero product screenshots. Sellers cannot visualize what they're installing. This is the single highest-impact fix available.
+**1. No product screenshots on the landing page** ← STILL MISSING
+The number one conversion driver for a browser extension is showing the actual UI. Sellers cannot visualize what they're installing without real screenshots. This is the single highest-impact fix available.
 
-**2. Testimonials are placeholders**
-The testimonials carousel component exists and is built, but it is populated with placeholder copy. Until real user quotes are collected, this section underperforms. We need a structured testimonial collection process — even 6 real quotes from real sellers would dramatically improve trust.
+**2. Testimonials are placeholders** ← STILL MISSING
+The testimonials carousel is populated with placeholder copy. Until real user quotes are collected, this section underperforms. We need a structured testimonial collection process — even 6 real quotes would dramatically improve trust.
 
-**3. Blog has no content**
-`/blog` exists as a page but is empty. Without content, we miss SEO entirely on high-intent queries like "how to automate Seller Central reports" or "Amazon SQP data export tool." Four articles would meaningfully change our organic reach.
+**3. Blog has partial content** ← PARTIALLY DONE
+3 blog posts exist (`/content/blog/`). The `/blog` page needs more content to meaningfully impact SEO on high-intent queries like "how to automate Seller Central reports."
 
-**4. Changelog is not updated**
-`/changelog` exists but has no version history populated. A living changelog signals "active product" — which is critical for SaaS trust. Sellers don't want to install an abandoned extension.
+**4. Changelog is not updated** ← STILL MISSING
+`/changelog` exists but has no version history. A living changelog signals "active product" — critical for SaaS trust.
 
-**5. Status page is not connected**
-`/status` exists as a page but is not connected to any uptime monitoring service. When something breaks, sellers have nowhere to check. Betterstack or UptimeRobot could be integrated in an afternoon.
+**5. Status page is not connected** ← STILL MISSING
+`/status` exists as a page but is not connected to any uptime monitoring service (Betterstack, UptimeRobot).
 
-**6. No product demo video**
-The `<DemoVideo />` component exists and is imported, but there is no actual video. A 90-second screen recording showing the extension running a real SQP Snapshot and downloading the CSV would close more trials than any copy rewrite.
+**6. No product demo video** ← STILL MISSING
+The `<DemoVideo />` component exists but has no actual video. A 90-second screen recording would close more trials than any copy rewrite.
 
-**7. No Enterprise / Custom tier**
-The current pricing tops out at Business. Agencies managing multiple Seller Central accounts across marketplaces have no obvious home. A simple "Contact Us for Enterprise" entry point would capture this segment.
+**7. No Enterprise / Custom tier** ← STILL MISSING
+The pricing tops out at Business. Agencies managing multiple accounts need a "Contact Us for Enterprise" entry point.
 
-**8. Scheduler requires Chrome to stay open**
-Scheduled runs require the Chrome browser to be running with an active Seller Central session. This means sellers who close their laptops at night miss scheduled overnight runs. A future cloud-hybrid mode (where the schedule triggers remotely and the extension runs on session restore) would resolve this.
+**8. Scheduler requires Chrome to stay open** ← KNOWN LIMITATION
+Scheduled runs require Chrome with an active Seller Central session. A future cloud-hybrid mode would resolve this.
 
-**9. Mobile experience is zero**
-The extension is Chrome-only, desktop-only by design — and that's fine. But the web dashboard (`/dashboard`) is not fully optimized for mobile. Sellers checking their data on phones get a degraded experience.
+**9. Mobile experience is zero** ← STILL MISSING
+The web dashboard (`/dashboard`) is not fully optimized for mobile.
 
-**10. No team / multi-user support**
-The current architecture is single-user per account. Agencies or brands with multiple team members (a VA running exports, an analyst reviewing data) have no way to share access or manage permissions. Role-based access control (RBAC) would open the agency market.
+**10. No team / multi-user support** ← STILL MISSING
+Single-user per account. Role-based access control (RBAC) would open the agency market.
 
 ---
 
 ### Marketing Gaps
 
-**1. No "The Problem" framing on the landing page**
-The current page leads with the solution. Premium SaaS always establishes the pain first. Sellers landing cold need to see their own frustration reflected back at them before they're ready to hear the solution. A dedicated Problem section is missing and critically needed.
+**1. Landing page sections** ← ✅ DONE (March 2026)
+Problem section, Tool Catalog, Integration Grid, Marketplace Grid, Social Proof Bar, How It Works (4 steps), What You Get (5 cards) — all built and live.
 
-**2. No social proof bar**
-The hero has no trust signals. Showing that 1,000+ sellers are already using AMZBoosted, alongside integration logos (Google, Slack, Discord), would immediately signal legitimacy to new visitors.
+**2. Marketplace copy clarity** ← ✅ DONE (March 2026)
+Updated marketplace-grid.tsx and what-you-get.tsx to accurately explain `.com` login + account switcher model.
 
-**3. Tool catalog is invisible**
-AMZBoosted has 11 specific, named tools. The current landing page never lists them. A visitor reading the page has no idea what tools they're getting. This is the biggest missed positioning opportunity — our competitors charge extra for individual tools; we include all of them on every plan.
+**3. ROI framing is absent from pricing** ← STILL MISSING
+The pricing section shows numbers but no value framing. The average seller running AMZBoosted saves 8–12 hours per month at $50/hour = $400–$600 recovered time monthly. None of this math is on the page.
 
-**4. Integration story is buried**
-Google Sheets Sync, Discord Alerts, Telegram Notifications — these are major selling points for professional sellers and teams. They are mentioned in the feature matrix but never showcased as a first-class section with context, plan availability, and visuals.
-
-**5. Global marketplace reach is not highlighted**
-Supporting 13 marketplaces is a premium differentiator. Jungle Scout and Helium 10 charge extra for international support. We support it all, out of the box, zero configuration — and we don't say it loudly enough anywhere on the page.
-
-**6. ROI framing is absent from pricing**
-The pricing section shows numbers but no value framing. The average seller running AMZBoosted saves 8–12 hours per month on manual exports. At $50/hour, that's $400–$600 in recovered time monthly. None of this math is on the page.
-
-**7. No content marketing strategy**
-We have no blog, no SEO content, no YouTube presence, no community presence on seller forums (Seller Forums, Reddit r/FulfillmentByAmazon, Facebook groups). The entire acquisition funnel is paid or direct. Organic is zero.
+**4. No content marketing strategy** ← PARTIALLY DONE
+3 blog posts exist. No YouTube presence, no community presence on seller forums. The entire acquisition funnel is paid or direct.
 
 ---
 
 ### Technical Debt
 
-**1. Sections lazy-loaded incorrectly**
-The landing page renders all sections eagerly at load time. Below-the-fold sections like the Testimonials Carousel, FAQ, and Tool Catalog should use `dynamic(() => import(...), { ssr: false })` to improve LCP scores and Time to Interactive.
+**1. Sections lazy-loaded incorrectly** ← STILL PENDING
+Below-the-fold sections should use `dynamic(() => import(...), { ssr: false })` to improve LCP scores.
 
-**2. Animation performance on low-power devices**
-Multiple sections use `animate-pulse` on background orbs simultaneously. On older hardware or battery-saving mode, this causes visible jank. These should be wrapped in `prefers-reduced-motion` checks.
+**2. Animation performance on low-power devices** ← STILL PENDING
+Multiple `animate-pulse` orbs running simultaneously. Should be wrapped in `prefers-reduced-motion` checks.
 
-**3. Plans data partially hardcoded**
-Some components reference plan names and features directly instead of pulling from `lib/config/plans.json` and `lib/pricing-data.ts`. If pricing changes, multiple files need updates instead of one.
+**3. Plans data partially hardcoded** ← STILL PENDING
+Some components reference plan names/features directly instead of pulling from `lib/config/plans.json`.
 
-**4. No A/B testing infrastructure in production**
-The `<ABTestProvider />` component exists and wraps the landing page, but no active tests are running. Headline variants, CTA copy variants, and pricing layout tests would generate real conversion data.
+**4. No A/B testing infrastructure in production** ← STILL PENDING
+`<ABTestProvider />` exists and wraps the landing page, but no active tests are running.
 
-**5. Email flows not fully tested end-to-end**
-Welcome email, trial expiry, payment receipt — the templates are built, but there is no automated QA for these flows. A broken welcome email on signup kills early activation.
+**5. Email flows not fully tested end-to-end** ← STILL PENDING
+Welcome email, trial expiry, payment receipt templates are built but have no automated QA.
+
+**6. Category Insights domain hardcoding** ← ✅ FIXED (March 2026)
+`category-insights.service.ts` now uses `getBaseDomain()` for regional domain switching. `marketplaceMap` updated with UK alias and additional regions.
 
 ---
 
@@ -197,4 +191,4 @@ The product work (cloud scheduler, RBAC, mobile) requires extension and backend 
 ---
 
 *AMZBoosted · Built by sellers, for sellers · March 2026*
-*This document reflects the current product state and known gaps as of the latest codebase audit.*
+*Last updated: 2026-03-14 — reflects landing page completion, marketplace clarity update, Category Insights domain fix.*

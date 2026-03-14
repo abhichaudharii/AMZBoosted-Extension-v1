@@ -3,6 +3,14 @@
 Based on full audit of `CREDIT_AND_USAGE_TRACKING.md` against all live code.
 Date: 2026-03-07
 
+> **Update 2026-03-14:**
+> The **tasks-based refund system** (Phase 1) was separately implemented and is live —
+> `POST /api/v1/tasks/start`, `finalize`, `heartbeat`, and reconciliation cron all shipped.
+> See `LAUNCH_READINESS.md` for details.
+>
+> The bugs and features below relate to the **legacy standalone endpoints** (`/credits/refund`,
+> `/user/credits/deduct`, `/analytics/track`) and pre-aggregation layer — these remain **PENDING**.
+
 ---
 
 ## Status Summary

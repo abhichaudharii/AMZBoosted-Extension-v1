@@ -27,9 +27,11 @@ We take a radical approach to data privacy. Unlike traditional SaaS tools that s
 
 ## 🛰️ The "Zero-Link" Advantage
 Stop wrestling with MAPI or complex account linking. AMZBoosted features **Automatic Account Detection**:
-- **Instant Recognition**: The extension automatically picks up whatever Seller Central account or Marketplace you are currently logged into.
-- **Switch with Ease**: When you change accounts in Seller Central, AMZBoosted stays in sync instantly.
-- **Global Support**: Full support for all global Amazon marketplaces (US, UK, DE, FR, IT, ES, CA, IN, AU, SG, JP, etc.).
+- **One Login**: Log in at `sellercentral.amazon.com` — Amazon's global hub. From there, use the native account switcher to access any of your marketplace accounts (US, UK, DE, JP, etc.).
+- **Instant Recognition**: The extension automatically picks up whatever Seller Central account or Marketplace is currently active.
+- **Switch with Ease**: When you switch marketplace accounts in Seller Central, AMZBoosted stays in sync instantly.
+- **Global Support**: Full support for 13 Amazon marketplaces — US, UK, DE, FR, IT, ES, CA, IN, AU, SG, JP, MX, BR.
+- **No Regional Logins Required**: You do not need to log into regional Seller Central domains (`.co.uk`, `.de`, etc.) separately. Everything works through `sellercentral.amazon.com` with marketplace selection handled by Amazon's own account switcher.
 
 ---
 

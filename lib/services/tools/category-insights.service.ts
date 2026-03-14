@@ -21,18 +21,41 @@ interface CategoryInfo {
 
 const marketplaceMap: Record<string, string> = {
     us: "ATVPDKIKX0DER",
-    de: "A1PA6795UKMFR9",
+    uk: "A1F83G8C2ARO7P",
     gb: "A1F83G8C2ARO7P",
-    jp: "A1VC38T7YXB528",
+    ca: "A2EUQ1WTGCTBG2",
+    de: "A1PA6795UKMFR9",
     fr: "A13V1IB3VIYZZH",
     it: "APJ6JRA9NG5V4",
-    es: "A1RKKUPIHCS9HS"
+    es: "A1RKKUPIHCS9HS",
+    in: "A21TJRUUN4KGV",
+    jp: "A1VC38T7YXB528",
+    au: "A39IBJ37TRP1C6",
+    mx: "A1AM78C64UM0Y8",
+    sg: "A19VAU5U5O7RUS",
 };
 
 class CategoryInsightsService {
     private activeRuns = new Map<string, boolean>();
 
-
+    private getBaseDomain(marketplace: string): string {
+        const domains: Record<string, string> = {
+            'US': 'sellercentral.amazon.com',
+            'UK': 'sellercentral.amazon.co.uk',
+            'GB': 'sellercentral.amazon.co.uk',
+            'CA': 'sellercentral.amazon.ca',
+            'DE': 'sellercentral.amazon.de',
+            'FR': 'sellercentral.amazon.fr',
+            'IT': 'sellercentral.amazon.it',
+            'ES': 'sellercentral.amazon.es',
+            'IN': 'sellercentral.amazon.in',
+            'JP': 'sellercentral.amazon.co.jp',
+            'AU': 'sellercentral.amazon.com.au',
+            'MX': 'sellercentral.amazon.com.mx',
+            'SG': 'sellercentral.amazon.sg',
+        };
+        return domains[marketplace?.toUpperCase()] || 'sellercentral.amazon.com';
+    }
 
     private delay(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -72,14 +95,15 @@ class CategoryInsightsService {
         };
 
         try {
-            const response = await fetch("https://sellercentral.amazon.com/next/v2/searchSGAR", {
+            const baseDomain = this.getBaseDomain(regionCode);
+            const response = await fetch(`https://${baseDomain}/next/v2/searchSGAR`, {
                 method: "POST",
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json;charset=utf-8",
                     "X-Requested-With": "XMLHttpRequest"
                 },
-                referrer: "https://sellercentral.amazon.com/selection/category-insights",
+                referrer: `https://${baseDomain}/selection/category-insights`,
                 body: JSON.stringify(payload)
             });
 
@@ -138,14 +162,15 @@ class CategoryInsightsService {
         };
 
         try {
-            const response = await fetch("https://sellercentral.amazon.com/next/v2/getPerformanceDashboard", {
+            const baseDomain = this.getBaseDomain(regionCode);
+            const response = await fetch(`https://${baseDomain}/next/v2/getPerformanceDashboard`, {
                 method: "POST",
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json;charset=utf-8",
                     "X-Requested-With": "XMLHttpRequest"
                 },
-                referrer: "https://sellercentral.amazon.com/selection/category-insights",
+                referrer: `https://${baseDomain}/selection/category-insights`,
                 body: JSON.stringify(payload)
             });
 
