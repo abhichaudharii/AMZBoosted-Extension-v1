@@ -450,6 +450,49 @@ These empty/error/loading states are missing or inadequate:
 
 ---
 
+## 15. Additional Critical Findings (From Deep Codebase Scan)
+
+### 🔴 `AnalyticsPage.tsx` is fully built but UNREACHABLE
+
+`AnalyticsPage.tsx` is 328 lines long with KPI cards, bar charts, tool usage breakdown, marketplace distribution, and extraction trend charts. It is imported in the router but **has no link in the Sidebar navigation**. Users can never find it.
+
+Add to sidebar under `"General"` section:
+```ts
+{ id: 'analytics', label: 'Analytics', icon: BarChart3, path: '/analytics' }
+```
+
+### 🔴 Manifest `host_permissions` only covers 8 Amazon domains
+
+The `manifest.json` lists these Amazon domains:
+```
+amazon.com, amazon.co.uk, amazon.ca, amazon.de,
+amazon.fr, amazon.it, amazon.es, amazon.in
+```
+
+The website claims **13 marketplaces**. The remaining 5 (`.co.jp`, `.com.au`, `.com.br`, `.mx`, `.ae`) will be **blocked by Chrome's permission model** — the extension will not work on these marketplaces. Add all 13 to `host_permissions`.
+
+### 🔴 Manifest version `1.1.0` vs changelog latest `v1.3.0`
+
+The `manifest.json` version is `"1.1.0"`. The changelog in `ChangelogPage.tsx` shows the latest version as `v1.3.0`. These must match. More importantly, both need to be updated to the actual current launch version before shipping to the Chrome Web Store.
+
+### 🟡 Sidepanel loading screen says `"Initializing Intelligence"`
+
+In `App.tsx` (sidepanel), while the auth check runs, the loading screen shows:
+```
+"Initializing Intelligence"
+```
+Same problem as the login screen's "Elite Edge OS" — wrong tone. Change to:
+```
+"Loading AMZBoosted..."
+```
+or simply show the logo with a spinner and no text.
+
+### 🔵 Keyboard shortcut `Alt+1-5` navigation exists but may not be documented
+
+The dashboard `App.tsx` wires `Alt+1` through `Alt+5` for quick navigation (Home, Reports, Schedules, Exports, Integrations). Verify these are listed in the `KeyboardShortcutsDialog` so users can discover them.
+
+---
+
 ## Priority Summary
 
 ### 🔴 Critical — Fix Before Any User Sees the Extension
@@ -466,6 +509,9 @@ These empty/error/loading states are missing or inadequate:
 | 8 | Billing page says "Starting at just $19/mo" (Starter is $29/mo) | `BillingPage.tsx` |
 | 9 | Billing page: "SQR & Category Insights" — typo, should be SQP | `BillingPage.tsx` |
 | 10 | `handleSyncNow` is a fake setTimeout — does nothing | `IntegrationsPage.tsx` |
+| 11 | `AnalyticsPage` is fully built (328 lines) but not linked in Sidebar nav | `Sidebar.tsx` |
+| 12 | Manifest only has 8 Amazon domains — 5 of the 13 claimed marketplaces are blocked | `manifest.json` / `wxt.config.ts` |
+| 13 | Manifest version `1.1.0` doesn't match changelog latest `v1.3.0` | `manifest.json` |
 
 ### 🟡 High — Ship Within 7 Days
 
