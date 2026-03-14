@@ -7,7 +7,7 @@
 import { useUserContext } from '@/lib/contexts/UserContext';
 import { getSubscriptionState, SubscriptionState } from '@/lib/utils/subscription';
 
-export type FeatureType = 'notification_channel' | 'integration' | 'schedule' | 'limit';
+export type FeatureType = 'notification_channel' | 'integration' | 'schedule' | 'limit' | 'tool';
 
 export interface UseFeaturesReturn {
     loading: boolean;
@@ -50,6 +50,8 @@ export function useFeatures(): UseFeaturesReturn {
                 return checkSchedulePermission(key, value, planTier);
             case 'limit':
                 return checkLimitPermission(key, value);
+            case 'tool':
+                return checkToolPermission(key, planTier);
             default:
                 return false;
         }
@@ -70,11 +72,20 @@ export function useFeatures(): UseFeaturesReturn {
     };
 
     const checkSchedulePermission = (key: string, value: any, plan: string): boolean => {
-        // key can be 'frequency', 'creation', etc.
+        // key can be 'frequency', 'hourly_interval', 'creation', etc.
         if (key === 'frequency') {
             const defaultAllowed = plan === 'starter' ? ['daily', 'weekly', 'monthly'] : ['hourly', 'daily', 'weekly', 'monthly'];
             const allowedFrequencies = limits?.allowedFrequencies || defaultAllowed;
             return allowedFrequencies.includes(value);
+        }
+
+        // hourly_interval: value is the interval in hours; enforced per plan
+        // Pro: minimum 4h. Business/Enterprise: minimum 1h.
+        if (key === 'hourly_interval') {
+            const interval = Number(value);
+            if (plan === 'business' || plan === 'enterprise') return interval >= 1;
+            if (plan === 'professional') return interval >= 4;
+            return false; // Starter cannot use hourly
         }
 
         if (key === 'creation') {
@@ -84,6 +95,16 @@ export function useFeatures(): UseFeaturesReturn {
             return currentSchedules < maxSchedules;
         }
 
+        return true;
+    };
+
+    // Tool-level feature gating
+    const checkToolPermission = (key: string, plan: string): boolean => {
+        if (plan === 'business' || plan === 'enterprise') return true;
+        if (key === 'account_selection') {
+            // Account selector (auto-switch between Seller Central accounts) = Pro+
+            return plan === 'professional';
+        }
         return true;
     };
 
@@ -106,7 +127,13 @@ export function useFeatures(): UseFeaturesReturn {
             return "Upgrade to Business Plan";
         }
         if (type === 'schedule' && key === 'frequency') {
-            return "Upgrade for higher frequency scheduling";
+            return "Upgrade to Pro for hourly scheduling";
+        }
+        if (type === 'schedule' && key === 'hourly_interval') {
+            return "Upgrade to Business for sub-4h hourly intervals";
+        }
+        if (type === 'tool' && key === 'account_selection') {
+            return "Account selection is available on Pro & Business plans";
         }
         return "Upgrade to Professional Plan";
     };

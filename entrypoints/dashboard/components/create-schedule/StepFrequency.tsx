@@ -9,10 +9,23 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Clock, Lock } from 'lucide-react';
+import { Clock, Lock, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLimits, useUser } from '@/lib/hooks/useUserData';
+import { useFeatures } from '@/lib/hooks/useFeatures';
 import { ScheduleFormData, DAYS_OF_WEEK } from './types';
+
+// Hourly interval options per plan
+// Pro: minimum 4h. Business: minimum 1h.
+const HOURLY_OPTIONS = [
+    { value: 1,  label: 'Every 1 hour',   minPlan: 'business' },
+    { value: 2,  label: 'Every 2 hours',  minPlan: 'business' },
+    { value: 3,  label: 'Every 3 hours',  minPlan: 'business' },
+    { value: 4,  label: 'Every 4 hours',  minPlan: 'professional' },
+    { value: 6,  label: 'Every 6 hours',  minPlan: 'professional' },
+    { value: 8,  label: 'Every 8 hours',  minPlan: 'professional' },
+    { value: 12, label: 'Every 12 hours', minPlan: 'professional' },
+];
 
 interface StepFrequencyProps {
   formData: ScheduleFormData;
@@ -31,14 +44,34 @@ export const StepFrequency: React.FC<StepFrequencyProps> = ({
 }) => {
   const { limits } = useLimits();
   const { user } = useUser();
+  const { checkPermission } = useFeatures();
+
+  const planTier = (() => {
+    const p = user?.plan?.toLowerCase() || 'starter';
+    if (p.includes('business') || p === 'enterprise') return 'business';
+    if (p.includes('professional') || p.includes('pro')) return 'professional';
+    return 'starter';
+  })();
 
   // Helper to check if frequency is allowed
   const isFrequencyAllowed = (freq: string) => {
-    // Permanent unlock for Business plans (including trial)
-    if (user?.plan?.includes('business') || user?.plan === 'enterprise') return true;
-
-    if (!limits?.allowedFrequencies) return true; // Default to allow if not defined
+    if (planTier === 'business' || planTier === 'enterprise') return true;
+    if (!limits?.allowedFrequencies) {
+      return freq !== 'hourly' || planTier === 'professional';
+    }
     return limits.allowedFrequencies.includes(freq);
+  };
+
+  // Helper to check if an hourly interval is allowed for current plan
+  const isIntervalAllowed = (hours: number) => {
+    return checkPermission('schedule', 'hourly_interval', hours);
+  };
+
+  // On hourly select, default interval to minimum allowed for the plan
+  const getDefaultInterval = () => {
+    if (planTier === 'business' || planTier === 'enterprise') return 1;
+    if (planTier === 'professional') return 4;
+    return 4;
   };
 
   const toggleDay = (dayId: string) => {
@@ -56,7 +89,12 @@ export const StepFrequency: React.FC<StepFrequencyProps> = ({
             <Label>Frequency</Label>
             <Select
               value={formData.frequency}
-              onValueChange={(value) => setFormData({ ...formData, frequency: value })}
+              onValueChange={(value) => setFormData({
+                ...formData,
+                frequency: value,
+                // Reset interval to plan minimum when switching to hourly
+                interval: value === 'hourly' ? getDefaultInterval() : formData.interval,
+              })}
             >
               <SelectTrigger className="w-full bg-[#0A0A0B]/50 border-white/10 text-white h-11 focus:ring-[#FF6B00]/20">
                 <SelectValue />
@@ -252,21 +290,48 @@ export const StepFrequency: React.FC<StepFrequencyProps> = ({
         </div>
       ) : (
         <div className="grid gap-2">
-          <Label htmlFor="interval">Repeat Every (Hours)</Label>
-          <div className="relative">
-            <Clock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              id="interval"
-              type="number"
-              min={1}
-              max={24}
-              value={formData.interval}
-              onChange={(e) => setFormData({ ...formData, interval: parseInt(e.target.value) || 1 })}
-              className="pl-9 bg-[#0A0A0B]/50 border-white/10 text-white h-11 focus:ring-[#FF6B00]/20"
-            />
-          </div>
+          <Label htmlFor="interval" className="flex items-center gap-2">
+            <Clock className="w-3.5 h-3.5" />
+            Repeat Interval
+          </Label>
+          <Select
+            value={String(formData.interval || getDefaultInterval())}
+            onValueChange={(v) => setFormData({ ...formData, interval: parseInt(v) })}
+          >
+            <SelectTrigger className="w-full bg-[#0A0A0B]/50 border-white/10 text-white h-11 focus:ring-[#FF6B00]/20">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-[#1A1A1C] border-white/10 text-white">
+              {HOURLY_OPTIONS.map((opt) => {
+                const allowed = isIntervalAllowed(opt.value);
+                const needsBusiness = opt.minPlan === 'business' && planTier !== 'business';
+                return (
+                  <SelectItem
+                    key={opt.value}
+                    value={String(opt.value)}
+                    disabled={!allowed}
+                    className="focus:bg-white/10 focus:text-white cursor-pointer"
+                  >
+                    <div className="flex items-center justify-between w-full gap-3">
+                      <span>{opt.label}</span>
+                      {!allowed && (
+                        <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-amber-400">
+                          <Zap className="w-3 h-3" />
+                          {needsBusiness ? 'Business' : 'Pro'}
+                        </span>
+                      )}
+                    </div>
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
           <p className="text-xs text-muted-foreground">
-            Task will run every {formData.interval} {formData.interval === 1 ? 'hour' : 'hours'}.
+            {planTier === 'starter'
+              ? 'Hourly scheduling requires Pro or Business plan.'
+              : planTier === 'professional'
+              ? 'Pro plan: minimum 4-hour interval. Upgrade to Business for 1–3 hour intervals.'
+              : `Task will run every ${formData.interval || getDefaultInterval()} hours.`}
           </p>
         </div>
       )}

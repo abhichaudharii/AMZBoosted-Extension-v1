@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from '@/components/ui/input';
-import { AccountMarketplaceSelector } from '../components/inputs/AccountMarketplaceSelector';
+import { PlanGatedAccountSelector } from '../components/inputs/PlanGatedAccountSelector';
 import { GlobalAccount, Marketplace } from '@/lib/services/account.service';
 import { CalendarIcon, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -19,27 +19,38 @@ export const SalesTrafficDrilldown: React.FC<SalesTrafficDrilldownProps> = ({ on
   const [endDate, setEndDate] = useState<string>(initialData?.endDate || new Date().toISOString().split('T')[0]);
   const [asins, setAsins] = useState<string>(initialData?.asinList ? initialData.asinList.join('\n') : ''); 
   
-  // Account/Marketplace State
+  // Account/Marketplace State (Pro/Business: full account object; Starter: country code string)
   const [selectedAccount, setSelectedAccount] = useState<GlobalAccount | null>(null);
   const [selectedMarketplace, setSelectedMarketplace] = useState<Marketplace | null>(null);
+  const [simpleMarketplace, setSimpleMarketplace] = useState<string>(initialData?.marketplace || 'US');
 
-  // Sync data with parent immediately and on change
+  // Sync data with parent on any change
   useEffect(() => {
     const asinList = asins.split('\n').map(a => a.trim()).filter(a => a.length > 0);
-    
+
     if (selectedMarketplace && selectedAccount) {
+        // Pro/Business: full account + marketplace data for auto-switching
         onDataChange({
             downloadType,
             startDate,
             endDate,
             asinList,
-            marketplace: selectedMarketplace.countryCode, 
+            marketplace: selectedMarketplace.countryCode,
             marketURL: selectedMarketplace.domain,
-            globalAccountId: selectedAccount.id, 
-            marketplaceIds: selectedMarketplace.ids
+            globalAccountId: selectedAccount.id,
+            marketplaceIds: selectedMarketplace.ids,
+        });
+    } else {
+        // Starter: uses active session, only passes marketplace code
+        onDataChange({
+            downloadType,
+            startDate,
+            endDate,
+            asinList,
+            marketplace: simpleMarketplace,
         });
     }
-  }, [downloadType, startDate, endDate, asins, selectedAccount, selectedMarketplace, onDataChange]);
+  }, [downloadType, startDate, endDate, asins, selectedAccount, selectedMarketplace, simpleMarketplace, onDataChange]);
 
   const handleClearAsins = () => {
     setAsins('');
@@ -51,12 +62,14 @@ export const SalesTrafficDrilldown: React.FC<SalesTrafficDrilldownProps> = ({ on
     <div className="space-y-4 animate-fade-in relative">
         <div className="flex justify-between items-start gap-4">
             <div className="flex-1">
-                {/* Account & Marketplace Selector */}
-                <AccountMarketplaceSelector
+                {/* Account & Marketplace Selector — Pro/Business: full account picker; Starter: simple dropdown */}
+                <PlanGatedAccountSelector
                     selectedGlobalAccountId={selectedAccount?.id}
                     onGlobalAccountChange={setSelectedAccount}
                     selectedMarketplace={selectedMarketplace}
                     onMarketplaceChange={setSelectedMarketplace}
+                    marketplaceValue={simpleMarketplace}
+                    onMarketplaceValueChange={setSimpleMarketplace}
                 />
             </div>
         </div>

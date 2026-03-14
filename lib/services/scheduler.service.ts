@@ -15,6 +15,7 @@ import { STORES, type Schedule, type Task } from '@/lib/db/schema';
 import { sendNotification } from '@/lib/api/services/notifications';
 
 import { checkAccess } from '@/lib/utils/access-control';
+import { accountService } from './account.service';
 
 const CHECK_INTERVAL = 1; // Check every 1 minute
 const RETRY_DELAY_MS = 60 * 60 * 1000; // Retry after 1 hour if auth fails
@@ -281,8 +282,60 @@ class SchedulerService {
                 return { success: false, scheduleId, reason };
             }
 
-            // 1. Check permission and deduct credits via backend
-            // ...
+            // 1a. Validate hourly interval against plan
+            if (schedule.frequency === 'hourly' && schedule.interval) {
+                const planTier = (() => {
+                    const p = user?.plan?.toLowerCase() || 'starter';
+                    if (p.includes('business') || p === 'enterprise') return 'business';
+                    if (p.includes('professional') || p.includes('pro')) return 'professional';
+                    return 'starter';
+                })();
+                const minInterval = planTier === 'business' || planTier === 'enterprise' ? 1
+                    : planTier === 'professional' ? 4
+                    : Infinity; // Starter cannot run hourly
+                if (schedule.interval < minInterval) {
+                    const reason = `Hourly interval of ${schedule.interval}h is not allowed on ${planTier} plan (minimum: ${minInterval}h)`;
+                    console.warn(`[Scheduler] ${reason}`);
+                    await this.createFailedTask(schedule, triggeredBy, reason);
+                    await notificationService.show({
+                        type: 'warning',
+                        title: 'Schedule Interval Restricted',
+                        message: `"${schedule.name}" requires a higher plan. Upgrade to run at ${schedule.interval}h intervals.`,
+                        actionLabel: 'Upgrade Plan',
+                        actionUrl: '/dashboard.html#/billing',
+                    });
+                    this.activeRuns.delete(scheduleId);
+                    return { success: false, scheduleId, reason };
+                }
+            }
+
+            // 1b. Auto-switch Seller Central account if schedule targets a specific account (Pro/Business)
+            // options.globalAccountId + options.marketplaceIds are set by PlanGatedAccountSelector
+            const scheduleOptions = schedule.options as any;
+            if (scheduleOptions?.globalAccountId && scheduleOptions?.marketplaceIds) {
+                const ids = scheduleOptions.marketplaceIds;
+                const merchantId = ids.mons_sel_dir_mcid || ids.merchant_id;
+                const marketplaceId = ids.mons_sel_mkid || ids.marketplace_id;
+                const partnerAccountId = ids.mons_sel_dir_paid || ids.partner_account_id;
+
+                if (merchantId && marketplaceId && partnerAccountId) {
+                    console.log(`[Scheduler] Switching to account ${scheduleOptions.globalAccountId} / marketplace ${marketplaceId}`);
+                    const switched = await accountService.switchAccount(merchantId, marketplaceId, partnerAccountId);
+                    if (!switched) {
+                        const reason = 'Account switch failed — Seller Central session may have changed';
+                        console.warn(`[Scheduler] ${reason}`);
+                        await this.createFailedTask(schedule, triggeredBy, reason);
+                        await notificationService.show({
+                            type: 'error',
+                            title: 'Account Switch Failed',
+                            message: `Could not switch to the account configured for "${schedule.name}". Check your Seller Central session.`,
+                        });
+                        this.activeRuns.delete(scheduleId);
+                        return { success: false, scheduleId, reason };
+                    }
+                    console.log(`[Scheduler] Account switch successful for schedule ${scheduleId}`);
+                }
+            }
 
             // 1. Check permission and deduct credits via backend
             const permissionResult = await apiClient.startScheduleRun({

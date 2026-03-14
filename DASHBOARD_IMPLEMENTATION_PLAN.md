@@ -2,6 +2,11 @@
 ### Protected Pages · Sidebar · Navbar · Missing Features · Design Upgrade
 ### March 2026
 
+> **Status as of 2026-03-14:**
+> This plan covers improvements to the **website dashboard** (app/(protected)/\*\*).
+> Most items in this plan are **PENDING** — the plan was written and reviewed but implementation is not complete.
+> Items that ARE done are noted with ✅ in-line.
+
 ---
 
 ## AUDIT SUMMARY
