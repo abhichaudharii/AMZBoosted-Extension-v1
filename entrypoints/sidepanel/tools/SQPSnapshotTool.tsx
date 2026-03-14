@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { MarketplaceSelector } from '../components/MarketplaceSelector';
+import { PlanGatedAccountSelector } from '../components/inputs/PlanGatedAccountSelector';
 import { WeekSelector } from '../components/inputs/WeekSelector';
+import { GlobalAccount, Marketplace } from '@/lib/services/account.service';
 import { DownloadType } from '../components/inputs/DownloadTypeSelector';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
@@ -29,6 +30,11 @@ export const SQPSnapshotTool: React.FC<SQPSnapshotToolProps> = ({
   availableMarketplaces,
 }) => {
   // State
+  // Pro/Business account selection path
+  const [selectedGlobalAccountId, setSelectedGlobalAccountId] = useState<string | undefined>(initialData?.globalAccountId);
+  const [selectedGlobalAccount, setSelectedGlobalAccount] = useState<GlobalAccount | null>(null);
+  const [selectedMarketplace, setSelectedMarketplace] = useState<Marketplace | null>(null);
+  // Starter fallback path
   const [marketplace, setMarketplace] = useState(initialData?.marketplace || 'us');
   const [asins, setAsins] = useState(initialData?.asins?.join('\n') || '');
   const [weeks, setWeeks] = useState<string[]>(initialData?.weeks || []);
@@ -77,6 +83,10 @@ export const SQPSnapshotTool: React.FC<SQPSnapshotToolProps> = ({
   useEffect(() => {
     const asinList = asins.split('\n').filter((a: string) => a.trim());
     onDataChange({
+      // Pro/Business path
+      globalAccountId: selectedGlobalAccountId,
+      marketplaceIds: selectedMarketplace ? [selectedMarketplace.marketplaceId] : undefined,
+      // Starter fallback
       marketplace,
       asins: asinList,
       weeks,
@@ -84,7 +94,7 @@ export const SQPSnapshotTool: React.FC<SQPSnapshotToolProps> = ({
       outputFormat,
       fetchedWeeks
     });
-  }, [marketplace, asins, weeks, downloadType, outputFormat, fetchedWeeks, onDataChange]);
+  }, [selectedGlobalAccountId, selectedMarketplace, marketplace, asins, weeks, downloadType, outputFormat, fetchedWeeks, onDataChange]);
 
   const handleClearAsins = () => {
     setAsins('');
@@ -188,11 +198,17 @@ export const SQPSnapshotTool: React.FC<SQPSnapshotToolProps> = ({
   return (
     <div className="space-y-4 animate-fade-in">
       
-      {/* Header: Marketplace Selector Only */}
-      <MarketplaceSelector
-        value={marketplace}
-        onChange={setMarketplace}
-        availableMarketplaces={availableMarketplaces}
+      {/* Account + Marketplace Selector (plan-gated) */}
+      <PlanGatedAccountSelector
+        selectedGlobalAccountId={selectedGlobalAccountId}
+        onGlobalAccountChange={(account) => {
+          setSelectedGlobalAccount(account);
+          setSelectedGlobalAccountId(account?.merchantId);
+        }}
+        selectedMarketplace={selectedMarketplace}
+        onMarketplaceChange={setSelectedMarketplace}
+        marketplaceValue={marketplace}
+        onMarketplaceValueChange={setMarketplace}
       />
 
       {/* ASIN Input Area */}

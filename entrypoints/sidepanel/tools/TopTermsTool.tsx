@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { MarketplaceSelector } from '../components/MarketplaceSelector';
+import { PlanGatedAccountSelector } from '../components/inputs/PlanGatedAccountSelector';
 import { WeekSelector } from '../components/inputs/WeekSelector';
+import { GlobalAccount, Marketplace } from '@/lib/services/account.service';
 import { DownloadType } from '../components/inputs/DownloadTypeSelector';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -27,6 +28,11 @@ export const TopTermsTool: React.FC<TopTermsToolProps> = ({
   availableMarketplaces,
 }) => {
   // State
+  // Pro/Business account selection path
+  const [selectedGlobalAccountId, setSelectedGlobalAccountId] = useState<string | undefined>(initialData?.globalAccountId);
+  const [selectedGlobalAccount, setSelectedGlobalAccount] = useState<GlobalAccount | null>(null);
+  const [selectedMarketplace, setSelectedMarketplace] = useState<Marketplace | null>(null);
+  // Starter fallback path
   const [marketplace, setMarketplace] = useState(initialData?.marketplace || 'us');
   const [asins, setAsins] = useState(initialData?.asins?.join('\n') || '');
   const [searchTerms, setSearchTerms] = useState(initialData?.searchTerms?.join('\n') || '');
@@ -77,6 +83,10 @@ export const TopTermsTool: React.FC<TopTermsToolProps> = ({
     const termList = searchTerms.split('\n').filter((t: string) => t.trim());
     
     onDataChange({
+      // Pro/Business path
+      globalAccountId: selectedGlobalAccountId,
+      marketplaceIds: selectedMarketplace ? [selectedMarketplace.marketplaceId] : undefined,
+      // Starter fallback
       marketplace,
       asins: asinList,
       searchTerms: termList,
@@ -85,7 +95,7 @@ export const TopTermsTool: React.FC<TopTermsToolProps> = ({
       outputFormat,
       fetchedWeeks
     });
-  }, [marketplace, asins, searchTerms, weeks, downloadType, outputFormat, fetchedWeeks, onDataChange]);
+  }, [selectedGlobalAccountId, selectedMarketplace, marketplace, asins, searchTerms, weeks, downloadType, outputFormat, fetchedWeeks, onDataChange]);
 
   const handleFetchWeeks = async () => {
     setIsFetchingWeeks(true);
@@ -118,11 +128,17 @@ export const TopTermsTool: React.FC<TopTermsToolProps> = ({
   return (
     <div className="space-y-4 animate-fade-in">
       
-      {/* Header: Marketplace Selector Only */}
-      <MarketplaceSelector
-        value={marketplace}
-        onChange={setMarketplace}
-        availableMarketplaces={availableMarketplaces}
+      {/* Account + Marketplace Selector (plan-gated) */}
+      <PlanGatedAccountSelector
+        selectedGlobalAccountId={selectedGlobalAccountId}
+        onGlobalAccountChange={(account) => {
+          setSelectedGlobalAccount(account);
+          setSelectedGlobalAccountId(account?.merchantId);
+        }}
+        selectedMarketplace={selectedMarketplace}
+        onMarketplaceChange={setSelectedMarketplace}
+        marketplaceValue={marketplace}
+        onMarketplaceValueChange={setMarketplace}
       />
 
       {/* Input Area */}

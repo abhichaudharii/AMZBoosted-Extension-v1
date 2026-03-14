@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { ToolPageLayout } from '../components/ToolPageLayout';
 import { cn } from '@/lib/utils';
+import { LINKS } from '@/lib/config/links';
 
 interface FAQItem {
   question: string;
@@ -251,31 +252,45 @@ export const SupportPage: React.FC = () => {
             </div>
             
             <div className="grid gap-3">
-               <Card className="bg-[#5865F2]/5 border-[#5865F2]/20 hover:bg-[#5865F2]/10 hover:border-[#5865F2]/40 transition-all group cursor-pointer relative overflow-hidden">
-                   <div className="p-4 flex items-center gap-4">
-                       <div className="h-10 w-10 rounded-lg bg-[#5865F2] flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#5865F2]/20 group-hover:scale-105 transition-transform">
-                           <MessageCircle className="h-5 w-5" />
+               <a
+                   href={LINKS.discord !== '#' ? LINKS.discord : undefined}
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className={LINKS.discord === '#' ? 'pointer-events-none opacity-60' : ''}
+               >
+                   <Card className="bg-[#5865F2]/5 border-[#5865F2]/20 hover:bg-[#5865F2]/10 hover:border-[#5865F2]/40 transition-all group cursor-pointer relative overflow-hidden">
+                       <div className="p-4 flex items-center gap-4">
+                           <div className="h-10 w-10 rounded-lg bg-[#5865F2] flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#5865F2]/20 group-hover:scale-105 transition-transform">
+                               <MessageCircle className="h-5 w-5" />
+                           </div>
+                           <div className="flex-1 min-w-0">
+                               <h4 className="font-bold text-white text-sm">Discord Server</h4>
+                               <p className="text-xs text-[#5865F2]/80 truncate">{LINKS.discord === '#' ? 'Coming soon' : 'Join the conversation'}</p>
+                           </div>
+                           <ExternalLink className="h-4 w-4 text-[#5865F2] opacity-50 group-hover:opacity-100 transition-opacity" />
                        </div>
-                       <div className="flex-1 min-w-0">
-                           <h4 className="font-bold text-white text-sm">Discord Server</h4>
-                           <p className="text-xs text-[#5865F2]/80 truncate">Join the conversation</p>
-                       </div>
-                       <ExternalLink className="h-4 w-4 text-[#5865F2] opacity-50 group-hover:opacity-100 transition-opacity" />
-                   </div>
-               </Card>
+                   </Card>
+               </a>
 
-               <Card className="bg-[#229ED9]/5 border-[#229ED9]/20 hover:bg-[#229ED9]/10 hover:border-[#229ED9]/40 transition-all group cursor-pointer relative overflow-hidden">
-                   <div className="p-4 flex items-center gap-4">
-                       <div className="h-10 w-10 rounded-lg bg-[#229ED9] flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#229ED9]/20 group-hover:scale-105 transition-transform">
-                           <Send className="h-5 w-5 ml-0.5 mt-0.5" />
+               <a
+                   href={LINKS.telegram !== '#' ? LINKS.telegram : undefined}
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className={LINKS.telegram === '#' ? 'pointer-events-none opacity-60' : ''}
+               >
+                   <Card className="bg-[#229ED9]/5 border-[#229ED9]/20 hover:bg-[#229ED9]/10 hover:border-[#229ED9]/40 transition-all group cursor-pointer relative overflow-hidden">
+                       <div className="p-4 flex items-center gap-4">
+                           <div className="h-10 w-10 rounded-lg bg-[#229ED9] flex items-center justify-center text-white shrink-0 shadow-lg shadow-[#229ED9]/20 group-hover:scale-105 transition-transform">
+                               <Send className="h-5 w-5 ml-0.5 mt-0.5" />
+                           </div>
+                           <div className="flex-1 min-w-0">
+                               <h4 className="font-bold text-white text-sm">Telegram Channel</h4>
+                               <p className="text-xs text-[#229ED9]/80 truncate">{LINKS.telegram === '#' ? 'Coming soon' : 'Instant updates & news'}</p>
+                           </div>
+                           <ExternalLink className="h-4 w-4 text-[#229ED9] opacity-50 group-hover:opacity-100 transition-opacity" />
                        </div>
-                       <div className="flex-1 min-w-0">
-                           <h4 className="font-bold text-white text-sm">Telegram Channel</h4>
-                           <p className="text-xs text-[#229ED9]/80 truncate">Instant updates & news</p>
-                       </div>
-                       <ExternalLink className="h-4 w-4 text-[#229ED9] opacity-50 group-hover:opacity-100 transition-opacity" />
-                   </div>
-               </Card>
+                   </Card>
+               </a>
             </div>
           </div>
 
